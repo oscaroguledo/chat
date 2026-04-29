@@ -5,6 +5,9 @@ export type MessageType = 'text' | 'image' | 'voice' | 'file' | 'video';
 export interface User {
   id: string;
   name: string;
+  username?: string;
+  email?: string;
+  phone?: string;
   avatar: string;
   status: 'online' | 'offline';
   lastSeen?: string;
@@ -21,6 +24,7 @@ export interface Message {
   replyTo?: string;
   reactions?: {emoji: string;userIds: string[];}[];
   edited?: boolean;
+  mentions?: string[];
   imageUrl?: string;
   videoUrl?: string;
   voiceUrl?: string;
@@ -57,6 +61,8 @@ export const users: Record<string, User> = {
   'user-2': {
     id: 'user-2',
     name: 'Sarah Chen',
+    username: 'sarahchen',
+    email: 'sarah@example.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
     status: 'online',
     bio: 'Product Designer @ Acme Inc'
@@ -64,6 +70,8 @@ export const users: Record<string, User> = {
   'user-3': {
     id: 'user-3',
     name: 'Marcus Johnson',
+    username: 'marcusj',
+    phone: '+1 555-0101',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus',
     status: 'offline',
     lastSeen: '2 hours ago',
@@ -72,6 +80,9 @@ export const users: Record<string, User> = {
   'user-4': {
     id: 'user-4',
     name: 'Emma Wilson',
+    username: 'emmaw',
+    email: 'emma@example.com',
+    phone: '+1 555-0102',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
     status: 'online',
     bio: 'UX Researcher'

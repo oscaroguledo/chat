@@ -103,15 +103,16 @@ export function ChatWindow({
     setSearchIndex(newIndex);
     scrollToMessage(searchResults[newIndex]);
   };
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = (content: string, mentions?: string[]) => {
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
       senderId: currentUser.id,
+      type: 'text',
       content,
       timestamp: new Date(),
-      type: 'text',
       status: 'sent',
-      replyTo: replyingTo?.id
+      replyToId: replyingTo?.id,
+      mentions
     };
     setMessages([...messages, newMessage]);
     setReplyingTo(undefined);
@@ -571,7 +572,9 @@ export function ChatWindow({
         onSendMessage={handleSendMessage}
         onSendVoice={handleSendVoice}
         replyingTo={replyingTo}
-        onCancelReply={() => setReplyingTo(undefined)} />
+        onCancelReply={() => setReplyingTo(undefined)}
+        members={chat.participants.map(id => users[id]).filter(Boolean)}
+        isGroupChat={chat.type === 'group'} />
       
     </div>);
 
