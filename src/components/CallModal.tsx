@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   PhoneOffIcon,
   MicIcon,
@@ -32,6 +32,79 @@ export function CallModal({
   const [isCameraOn, setIsCameraOn] = useState(callType === 'video');
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [elapsed, setElapsed] = useState(0);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const ringingIntervalRef = useRef<number | null>(null);
+
+  // Ringing sound and vibration effect
+  useEffect(() => {
+    if (callState !== 'ringing') return;
+
+    // Create ringing sound using Web Audio API
+    const createRingTone = () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioContextRef.current = audioContext;
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Ring tone: 440Hz (A4) for 1 second, then 880Hz (A5) briefly
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 1);
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 1.1);
+
+        // Volume envelope
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 1.5);
+
+        oscillatorRef.current = oscillator;
+        gainNodeRef.current = gainNode;
+      } catch (e) {
+        console.error('Audio play failed:', e);
+      }
+    };
+
+    // Vibration pattern: vibrate for 1 second, pause for 0.5 seconds, repeat
+    const startVibration = () => {
+      if ('vibrate' in navigator) {
+        navigator.vibrate([1000, 500]);
+      }
+    };
+
+    // Initial ring and vibration
+    createRingTone();
+    startVibration();
+
+    // Repeat ringing pattern every 2 seconds
+    ringingIntervalRef.current = window.setInterval(() => {
+      createRingTone();
+      startVibration();
+    }, 2000);
+
+    return () => {
+      // Cleanup
+      if (ringingIntervalRef.current) {
+        clearInterval(ringingIntervalRef.current);
+        ringingIntervalRef.current = null;
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+      if ('vibrate' in navigator) {
+        navigator.vibrate(0); // Stop vibration
+      }
+    };
+  }, [callState]);
+
   useEffect(() => {
     const connectTimer = setTimeout(() => setCallState('connected'), 3000);
     return () => clearTimeout(connectTimer);
