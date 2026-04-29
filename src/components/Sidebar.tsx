@@ -384,8 +384,8 @@ export function Sidebar({
           <h3 className="text-xl font-semibold text-chat-text dark:text-chat-text">
             {currentUser.name}
           </h3>
-          <p className="text-sm text-chat-muted dark:text-chat-muted mt-1">
-            Online
+          <p className={`text-sm mt-1 ${currentUser.status === 'online' ? 'text-green-500' : 'text-red-500'}`}>
+            {currentUser.status === 'online' ? 'Online' : 'Offline'}
           </p>
         </div>
         <div className="border-t border-chat-border dark:border-chat-border">
@@ -428,23 +428,10 @@ export function Sidebar({
       <div className="p-4 border-b border-chat-border dark:border-chat-border">
         {/* Desktop header */}
         <div className="hidden md:flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
-              className="w-10 h-10 rounded-full" />
-            
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-chat-online border-2 border-chat-card dark:border-chat-card rounded-full" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-chat-text dark:text-chat-text">
-                {currentUser.name}
-              </h3>
-              <p className="text-xs text-chat-muted dark:text-chat-muted">
-                Online
-              </p>
-            </div>
+          <div>
+            <h3 className="font-bold text-xl text-chat-text dark:text-chat-text">
+              {import.meta.env.VITE_APP_NAME || 'Chat'}
+            </h3>
           </div>
           <div className="relative" onClick={(e) => e.stopPropagation()}>
             <button
