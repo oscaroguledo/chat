@@ -30,10 +30,11 @@ export function InfoPanel({ chat, onClose }: InfoPanelProps) {
   const [expandedSections, setExpandedSections] = useState({
     media: true,
     files: true,
-    links: true
+    links: true,
+    members: true
   });
 
-  const toggleSection = (section: 'media' | 'files' | 'links') => {
+  const toggleSection = (section: 'media' | 'files' | 'links' | 'members') => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
@@ -317,48 +318,71 @@ export function InfoPanel({ chat, onClose }: InfoPanelProps) {
       )}
 
       {/* Group Members */}
-      {isGroup &&
-      <div className="p-4 border-b border-chat-border dark:border-chat-border">
-          <h4 className="font-semibold text-chat-text dark:text-chat-text mb-3">
+      {isGroup && (
+      <div className="border-b border-chat-border dark:border-chat-border">
+        <button
+          onClick={() => toggleSection('members')}
+          className="w-full p-4 flex items-center justify-between hover:bg-chat-area dark:hover:bg-chat-area transition-colors"
+        >
+          <h4 className="font-semibold text-chat-text dark:text-chat-text">
             Members ({members.length})
           </h4>
-          <div className="space-y-2">
-            {members.map((member) => {
-            const isAdmin = chat.groupAdmins?.includes(member.id);
-            return (
-              <div
-                key={member.id}
-                className="flex items-center gap-3 p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors">
-                
-                  <div className="relative">
-                    <img
-                    src={member.avatar}
-                    alt={member.name}
-                    className="w-10 h-10 rounded-full" />
-                  
-                    {member.status === 'online' &&
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-chat-online border-2 border-chat-card dark:border-chat-card rounded-full" />
-                  }
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-chat-text dark:text-chat-text truncate">
-                        {member.name}
-                      </p>
-                      {isAdmin &&
-                    <CrownIcon className="w-4 h-4 text-yellow-500 flex-shrink-0" />
-                    }
-                    </div>
-                    <p className="text-xs text-chat-muted dark:text-chat-muted truncate">
-                      {member.bio || member.status}
-                    </p>
-                  </div>
-                </div>);
+          {expandedSections.members ? (
+            <ChevronUpIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
+          ) : (
+            <ChevronDownIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
+          )}
+        </button>
+        <AnimatePresence>
+          {expandedSections.members && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 pb-4">
+                <div className="space-y-2">
+                  {members.map((member) => {
+                  const isAdmin = chat.groupAdmins?.includes(member.id);
+                  return (
+                    <div
+                      key={member.id}
+                      className="flex items-center gap-3 p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors">
+                      
+                        <div className="relative">
+                          <img
+                          src={member.avatar}
+                          alt={member.name}
+                          className="w-10 h-10 rounded-full" />
+                        
+                          {member.status === 'online' &&
+                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-chat-online border-2 border-chat-card dark:border-chat-card rounded-full" />
+                        }
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-chat-text dark:text-chat-text truncate">
+                              {member.name}
+                            </p>
+                            {isAdmin &&
+                          <CrownIcon className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                          }
+                          </div>
+                          <p className="text-xs text-chat-muted dark:text-chat-muted truncate">
+                            {member.bio || member.status}
+                          </p>
+                        </div>
+                      </div>);
 
-          })}
-          </div>
-        </div>
-      }
+                })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      )}
 
       {/* Actions */}
       <div className="p-4 space-y-2">
