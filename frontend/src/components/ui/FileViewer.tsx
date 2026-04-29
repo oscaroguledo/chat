@@ -10,7 +10,9 @@ import {
   FileAudioIcon,
   FileCodeIcon,
   FileSpreadsheetIcon,
-  FileTypeIcon
+  FileTypeIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from 'lucide-react';
 
 export interface FileViewerProps {
@@ -21,9 +23,43 @@ export interface FileViewerProps {
   isOpen: boolean;
   onClose: () => void;
   onDownload?: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasNext?: boolean;
+  hasPrev?: boolean;
 }
 
-export function FileViewer({ url, fileName, fileSize, fileType, isOpen, onClose, onDownload }: FileViewerProps) {
+export function FileViewer({ 
+  url, 
+  fileName, 
+  fileSize, 
+  fileType, 
+  isOpen, 
+  onClose, 
+  onDownload,
+  onNext,
+  onPrev,
+  hasNext,
+  hasPrev
+}: FileViewerProps) {
+
+  // Handle keyboard navigation
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' && hasNext && onNext) {
+        onNext();
+      } else if (e.key === 'ArrowLeft' && hasPrev && onPrev) {
+        onPrev();
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, hasNext, hasPrev, onNext, onPrev, onClose]);
   const getFileIcon = () => {
     const extension = fileName.split('.').pop()?.toLowerCase();
     
@@ -64,6 +100,32 @@ export function FileViewer({ url, fileName, fileSize, fileType, isOpen, onClose,
           className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
           onClick={onClose}
         >
+          {/* Navigation Buttons */}
+          {hasPrev && onPrev && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onPrev();
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-20"
+              title="Previous"
+            >
+              <ChevronLeftIcon className="w-6 h-6" />
+            </button>
+          )}
+          {hasNext && onNext && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onNext();
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-20"
+              title="Next"
+            >
+              <ChevronRightIcon className="w-6 h-6" />
+            </button>
+          )}
+
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

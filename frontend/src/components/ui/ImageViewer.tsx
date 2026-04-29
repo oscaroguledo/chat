@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { XIcon, ZoomInIcon, ZoomOutIcon, DownloadIcon } from 'lucide-react';
+import { XIcon, ZoomInIcon, ZoomOutIcon, DownloadIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 export interface ImageViewerProps {
   url: string;
@@ -8,14 +8,48 @@ export interface ImageViewerProps {
   isOpen: boolean;
   onClose: () => void;
   onDownload?: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasNext?: boolean;
+  hasPrev?: boolean;
 }
 
-export function ImageViewer({ url, alt, isOpen, onClose, onDownload }: ImageViewerProps) {
+export function ImageViewer({ 
+  url, 
+  alt, 
+  isOpen, 
+  onClose, 
+  onDownload,
+  onNext,
+  onPrev,
+  hasNext,
+  hasPrev
+}: ImageViewerProps) {
   const [scale, setScale] = React.useState(1);
 
   const handleZoomIn = () => setScale(prev => Math.min(prev + 0.25, 3));
   const handleZoomOut = () => setScale(prev => Math.max(prev - 0.25, 0.5));
   const handleReset = () => setScale(1);
+
+  // Handle keyboard navigation
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' && hasNext && onNext) {
+        onNext();
+        setScale(1); // Reset zoom on navigation
+      } else if (e.key === 'ArrowLeft' && hasPrev && onPrev) {
+        onPrev();
+        setScale(1); // Reset zoom on navigation
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, hasNext, hasPrev, onNext, onPrev, onClose]);
 
   return (
     <AnimatePresence>
@@ -69,8 +103,37 @@ export function ImageViewer({ url, alt, isOpen, onClose, onDownload }: ImageView
             </div>
           </div>
 
+          {/* Navigation Buttons */}
+          {hasPrev && onPrev && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onPrev();
+                setScale(1);
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-20"
+              title="Previous"
+            >
+              <ChevronLeftIcon className="w-6 h-6" />
+            </button>
+          )}
+          {hasNext && onNext && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onNext();
+                setScale(1);
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-20"
+              title="Next"
+            >
+              <ChevronRightIcon className="w-6 h-6" />
+            </button>
+          )}
+
           {/* Image */}
           <motion.img
+            key={url} // Force re-render on url change
             src={url}
             alt={alt || 'Image'}
             className="max-w-full max-h-full object-contain cursor-grab active:cursor-grabbing"

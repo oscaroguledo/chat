@@ -7,7 +7,9 @@ import {
   Volume2Icon, 
   VolumeXIcon,
   MaximizeIcon,
-  DownloadIcon
+  DownloadIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from 'lucide-react';
 
 export interface VideoPlayerProps {
@@ -16,9 +18,23 @@ export interface VideoPlayerProps {
   isOpen: boolean;
   onClose: () => void;
   onDownload?: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasNext?: boolean;
+  hasPrev?: boolean;
 }
 
-export function VideoPlayer({ url, title, isOpen, onClose, onDownload }: VideoPlayerProps) {
+export function VideoPlayer({ 
+  url, 
+  title, 
+  isOpen, 
+  onClose, 
+  onDownload,
+  onNext,
+  onPrev,
+  hasNext,
+  hasPrev
+}: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -46,6 +62,24 @@ export function VideoPlayer({ url, title, isOpen, onClose, onDownload }: VideoPl
       video.removeEventListener('ended', onEnded);
     };
   }, []);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' && hasNext && onNext) {
+        onNext();
+      } else if (e.key === 'ArrowLeft' && hasPrev && onPrev) {
+        onPrev();
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, hasNext, hasPrev, onNext, onPrev, onClose]);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -147,6 +181,32 @@ export function VideoPlayer({ url, title, isOpen, onClose, onDownload }: VideoPl
               </button>
             </div>
           </div>
+
+          {/* Navigation Buttons */}
+          {hasPrev && onPrev && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onPrev();
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-20"
+              title="Previous"
+            >
+              <ChevronLeftIcon className="w-6 h-6" />
+            </button>
+          )}
+          {hasNext && onNext && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onNext();
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-20"
+              title="Next"
+            >
+              <ChevronRightIcon className="w-6 h-6" />
+            </button>
+          )}
 
           {/* Video */}
           <video
