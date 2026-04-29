@@ -31,3 +31,12 @@ export type { MessageInputProps } from './MessageInput';
 
 export { MediaViewer } from './MediaViewer';
 export type { MediaViewerProps } from './MediaViewer';
+
+export { ImageViewer } from './ImageViewer';
+export type { ImageViewerProps } from './ImageViewer';
+
+export { VideoPlayer } from './VideoPlayer';
+export type { VideoPlayerProps } from './VideoPlayer';
+
+export { FileViewer } from './FileViewer';
+export type { FileViewerProps } from './FileViewer';
