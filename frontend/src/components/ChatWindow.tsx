@@ -27,13 +27,15 @@ interface ChatWindowProps {
   callType: CallType)
   => void;
   onReplyPrivately?: (senderId: string, quotedMessage: Message) => void;
+  initialScrollToMessageId?: string;
 }
 export function ChatWindow({
   chat,
   onToggleInfo,
   onBack,
   onStartCall,
-  onReplyPrivately
+  onReplyPrivately,
+  initialScrollToMessageId
 }: ChatWindowProps) {
   const [messages, setMessages] = useState(chat.messages);
   const [replyingTo, setReplyingTo] = useState<Message | undefined>();
@@ -64,6 +66,19 @@ export function ChatWindow({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Scroll to a specific message when requested (e.g., after replying privately)
+  useEffect(() => {
+    if (!initialScrollToMessageId) return;
+    setTimeout(() => {
+      const el = document.getElementById(`message-${initialScrollToMessageId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('highlight-message');
+        setTimeout(() => el.classList.remove('highlight-message'), 2000);
+      }
+    }, 120);
+  }, [messages, initialScrollToMessageId]);
   useEffect(() => {
     if (!showMenu) return;
     const close = () => setShowMenu(false);

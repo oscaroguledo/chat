@@ -18,6 +18,7 @@ interface ActiveCall {
 export function App() {
   const [allChats, setAllChats] = useState(chats);
   const [activeChat, setActiveChat] = useState(() => chats[0]);
+  const [scrollToMessageId, setScrollToMessageId] = useState<string | undefined>(undefined);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
@@ -64,8 +65,22 @@ export function App() {
       (c) => c.type === 'direct' && c.participants.includes(senderId) && c.participants.includes(currentUser.id)
     );
 
+    const newMessageId = `msg-${Date.now() + 1}`;
+    const newMessage = {
+      id: newMessageId,
+      senderId: senderId,
+      content: quotedMessage.content,
+      timestamp: new Date(),
+      type: 'text'
+    };
+
     if (directChat) {
-      setActiveChat(directChat);
+      // Append the quoted message into the existing direct chat so it appears there
+      const updatedChats = allChats.map((c) => c.id === directChat.id ? { ...c, messages: [...c.messages, newMessage] } : c);
+      const updatedChat = updatedChats.find((c) => c.id === directChat.id)!;
+      setAllChats(updatedChats);
+      setActiveChat(updatedChat);
+      setScrollToMessageId(newMessageId);
       setMobileView('chat');
       setShowInfoPanel(false);
     } else {
@@ -94,6 +109,7 @@ export function App() {
 
       setAllChats((prev) => [newChat, ...prev]);
       setActiveChat(newChat);
+      setScrollToMessageId(newMessageId);
       setMobileView('chat');
       setShowInfoPanel(false);
     }
@@ -105,6 +121,7 @@ export function App() {
         <div className="flex-1 flex flex-col relative overflow-hidden min-h-0">
           <ChatWindow
             chat={activeChat}
+            initialScrollToMessageId={scrollToMessageId}
             onToggleInfo={() => setShowInfoPanel(!showInfoPanel)}
             onBack={handleMobileBack}
             onStartCall={handleStartCall}
@@ -171,6 +188,7 @@ export function App() {
         
         <ChatWindow
           chat={activeChat}
+          initialScrollToMessageId={scrollToMessageId}
           onToggleInfo={() => setShowInfoPanel(!showInfoPanel)}
           onStartCall={handleStartCall}
           onReplyPrivately={handleReplyPrivately} />
