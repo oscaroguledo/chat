@@ -1,12 +1,15 @@
 import React from 'react';
-import { Chat, users, currentUser, sharedMedia } from '../data/mockData';
+import { Chat, users, currentUser } from '../data/mockData';
 import {
   XIcon,
   BellOffIcon,
   FlagIcon,
   ShieldCheckIcon,
   CrownIcon,
-  ArrowLeftIcon } from
+  ArrowLeftIcon,
+  ImageIcon,
+  FileIcon,
+  LinkIcon } from
 'lucide-react';
 import { motion } from 'framer-motion';
 interface InfoPanelProps {
@@ -21,6 +24,33 @@ export function InfoPanel({ chat, onClose }: InfoPanelProps) {
   const members = isGroup ?
   chat.participants.map((id) => users[id]).filter(Boolean) :
   [];
+
+  // Extract shared media from chat messages
+  const sharedMedia = chat.messages
+    .filter(m => m.type === 'image' || m.type === 'video')
+    .map(m => m.type === 'image' ? m.imageUrl : m.videoUrl)
+    .filter(Boolean);
+
+  // Extract shared files from chat messages
+  const sharedFiles = chat.messages
+    .filter(m => m.type === 'file')
+    .map(m => ({
+      name: m.fileName,
+      size: m.fileSize,
+      url: m.fileUrl
+    }))
+    .filter(f => f.name && f.url);
+
+  // Extract links from text messages
+  const linkRegex = /(https?:\/\/[^\s]+)/g;
+  const sharedLinks = chat.messages
+    .filter(m => m.type === 'text' && m.content.match(linkRegex))
+    .map(m => {
+      const matches = m.content.match(linkRegex);
+      return matches || [];
+    })
+    .flat()
+    .filter(Boolean);
   return (
     <motion.div
       initial={{
@@ -95,9 +125,11 @@ export function InfoPanel({ chat, onClose }: InfoPanelProps) {
       </div>
 
       {/* Shared Media */}
+      {sharedMedia.length > 0 && (
       <div className="p-4 border-b border-chat-border dark:border-chat-border">
-        <h4 className="font-semibold text-chat-text dark:text-chat-text mb-3">
-          Shared Media
+        <h4 className="font-semibold text-chat-text dark:text-chat-text mb-3 flex items-center gap-2">
+          <ImageIcon className="w-4 h-4" />
+          Shared Media ({sharedMedia.length})
         </h4>
         <div className="grid grid-cols-3 gap-2">
           {sharedMedia.slice(0, 6).map((url, idx) =>
@@ -114,6 +146,62 @@ export function InfoPanel({ chat, onClose }: InfoPanelProps) {
           )}
         </div>
       </div>
+      )}
+
+      {/* Shared Files */}
+      {sharedFiles.length > 0 && (
+      <div className="p-4 border-b border-chat-border dark:border-chat-border">
+        <h4 className="font-semibold text-chat-text dark:text-chat-text mb-3 flex items-center gap-2">
+          <FileIcon className="w-4 h-4" />
+          Shared Files ({sharedFiles.length})
+        </h4>
+        <div className="space-y-2">
+          {sharedFiles.map((file, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-3 p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors cursor-pointer"
+            >
+              <div className="w-10 h-10 bg-chat-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileIcon className="w-5 h-5 text-chat-accent" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-chat-text dark:text-chat-text truncate">
+                  {file.name}
+                </p>
+                <p className="text-xs text-chat-muted dark:text-chat-muted">
+                  {file.size}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      )}
+
+      {/* Shared Links */}
+      {sharedLinks.length > 0 && (
+      <div className="p-4 border-b border-chat-border dark:border-chat-border">
+        <h4 className="font-semibold text-chat-text dark:text-chat-text mb-3 flex items-center gap-2">
+          <LinkIcon className="w-4 h-4" />
+          Shared Links ({sharedLinks.length})
+        </h4>
+        <div className="space-y-2">
+          {sharedLinks.slice(0, 5).map((link, idx) => (
+            <a
+              key={idx}
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors"
+            >
+              <p className="text-sm text-chat-accent truncate break-all">
+                {link}
+              </p>
+            </a>
+          ))}
+        </div>
+      </div>
+      )}
 
       {/* Group Members */}
       {isGroup &&
