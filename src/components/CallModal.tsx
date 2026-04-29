@@ -24,8 +24,8 @@ export function CallModal({
   callType,
   onClose
 }: CallModalProps) {
-  const [callState, setCallState] = useState<'ringing' | 'connected' | 'ended'>(
-    'ringing'
+  const [callState, setCallState] = useState<'calling' | 'ringing' | 'connected' | 'ended'>(
+    'calling'
   );
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeaker, setIsSpeaker] = useState(false);
@@ -37,9 +37,9 @@ export function CallModal({
   const gainNodeRef = useRef<GainNode | null>(null);
   const ringingIntervalRef = useRef<number | null>(null);
 
-  // Ringing sound and vibration effect
+  // Ringing sound and vibration effect (active during calling and ringing states)
   useEffect(() => {
-    if (callState !== 'ringing') return;
+    if (callState !== 'calling' && callState !== 'ringing') return;
 
     // Create ringing sound using Web Audio API
     const createRingTone = () => {
@@ -105,10 +105,7 @@ export function CallModal({
     };
   }, [callState]);
 
-  useEffect(() => {
-    const connectTimer = setTimeout(() => setCallState('connected'), 3000);
-    return () => clearTimeout(connectTimer);
-  }, []);
+  // Timer only runs when connected
   useEffect(() => {
     if (callState !== 'connected') return;
     const interval = setInterval(() => setElapsed((prev) => prev + 1), 1000);
@@ -215,7 +212,7 @@ export function CallModal({
               className="w-28 h-28 rounded-full border-4 border-white/10" />
 
             }
-            {callState === 'ringing' &&
+            {(callState === 'calling' || callState === 'ringing') &&
             <motion.div
               animate={{
                 scale: [1, 1.4, 1],
@@ -240,7 +237,7 @@ export function CallModal({
             {callType === 'video' ? 'Video Call' : 'Voice Call'}
           </p>
           <div className="h-5">
-            {callState === 'ringing' &&
+            {(callState === 'calling' || callState === 'ringing') &&
             <motion.p
               animate={{
                 opacity: [1, 0.4, 1]
@@ -251,7 +248,7 @@ export function CallModal({
               }}
               className="text-chat-accent text-sm font-medium">
               
-                Ringing...
+                {callState === 'calling' ? 'Calling...' : 'Ringing...'}
               </motion.p>
             }
             {callState === 'connected' &&
