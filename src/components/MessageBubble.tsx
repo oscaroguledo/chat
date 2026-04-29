@@ -9,7 +9,8 @@ import {
   EyeIcon,
   ReplyIcon,
   SmilePlusIcon,
-  PinIcon } from
+  PinIcon,
+  MessageSquareIcon } from
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AudioPlayer } from './ui/AudioPlayer';
@@ -24,6 +25,8 @@ interface MessageBubbleProps {
   onPin?: (messageId: string) => void;
   onScrollToMessage?: (messageId: string) => void;
   isPinned?: boolean;
+  isGroupChat?: boolean;
+  onReplyPrivately?: (message: Message) => void;
 }
 const quickReactions = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 // YouTube URL detection
@@ -49,7 +52,9 @@ export function MessageBubble({
   onReact,
   onPin,
   onScrollToMessage,
-  isPinned
+  isPinned,
+  isGroupChat,
+  onReplyPrivately
 }: MessageBubbleProps) {
   const sender = users[message.senderId];
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -84,6 +89,10 @@ export function MessageBubble({
   };
   const handlePin = () => {
     onPin?.(message.id);
+    setShowActions(false);
+  };
+  const handleReplyPrivately = () => {
+    onReplyPrivately?.(message);
     setShowActions(false);
   };
   const getStatusIcon = () => {
@@ -321,6 +330,15 @@ export function MessageBubble({
                 
                 <ReplyIcon className="w-4 h-4" />
               </button>
+              {isGroupChat && !isOwnMessage && (
+                <button
+                  onClick={handleReplyPrivately}
+                  className="p-1.5 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-chat-muted dark:text-chat-muted"
+                  title="Reply privately">
+                  
+                  <MessageSquareIcon className="w-4 h-4" />
+                </button>
+              )}
               <button
                 onClick={handlePin}
                 className={`p-1.5 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-chat-area dark:hover:bg-chat-area transition-colors ${isPinned ? 'text-chat-accent' : 'text-chat-muted dark:text-chat-muted'}`}
@@ -454,6 +472,17 @@ export function MessageBubble({
                     Reply
                   </span>
                 </button>
+                {isGroupChat && !isOwnMessage && (
+                  <button
+                  onClick={handleReplyPrivately}
+                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left">
+                  
+                    <MessageSquareIcon className="w-5 h-5 text-chat-muted dark:text-chat-muted" />
+                    <span className="text-sm font-medium text-chat-text dark:text-chat-text">
+                      Reply privately
+                    </span>
+                  </button>
+                )}
                 <button
                 onClick={handlePin}
                 className="w-full flex items-center gap-3 px-5 py-4 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left">

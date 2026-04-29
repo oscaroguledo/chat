@@ -17,8 +17,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface InfoPanelProps {
   chat: Chat;
   onClose: () => void;
+  onMemberClick?: (userId: string) => void;
 }
-export function InfoPanel({ chat, onClose }: InfoPanelProps) {
+export function InfoPanel({ chat, onClose, onMemberClick }: InfoPanelProps) {
   const isGroup = chat.type === 'group';
   const otherUser = !isGroup ?
   users[chat.participants.find((id) => id !== currentUser.id) || ''] :
@@ -425,10 +426,12 @@ export function InfoPanel({ chat, onClose }: InfoPanelProps) {
                 <div className="space-y-2">
                   {members.map((member) => {
                   const isAdmin = chat.groupAdmins?.includes(member.id);
+                  const isCurrentUser = member.id === currentUser.id;
                   return (
-                    <div
+                    <button
                       key={member.id}
-                      className="flex items-center gap-3 p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors">
+                      onClick={() => !isCurrentUser && onMemberClick?.(member.id)}
+                      className={`w-full flex items-center gap-3 p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-left ${isCurrentUser ? 'cursor-default' : 'cursor-pointer'}`}>
                       
                         <div className="relative">
                           <img
@@ -445,7 +448,10 @@ export function InfoPanel({ chat, onClose }: InfoPanelProps) {
                             <p className="font-medium text-chat-text dark:text-chat-text truncate">
                               {member.name}
                             </p>
-                            {isAdmin &&
+                            {isCurrentUser && (
+                              <span className="text-[10px] bg-chat-accent/20 text-chat-accent px-2 py-0.5 rounded-full">You</span>
+                            )}
+                            {isAdmin && !isCurrentUser &&
                           <CrownIcon className="w-4 h-4 text-yellow-500 flex-shrink-0" />
                           }
                           </div>
@@ -453,7 +459,10 @@ export function InfoPanel({ chat, onClose }: InfoPanelProps) {
                             {member.bio || member.status}
                           </p>
                         </div>
-                      </div>);
+                        {!isCurrentUser && (
+                          <span className="text-xs text-chat-accent">Chat</span>
+                        )}
+                      </button>);
 
                 })}
                 </div>
