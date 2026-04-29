@@ -120,13 +120,6 @@ export function CallModal({
     setCallState('ended');
     setTimeout(onClose, 800);
   };
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleEndCall();
-    };
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
-  }, []);
   const ControlButton = ({
     active,
     activeIcon,
@@ -165,8 +158,7 @@ export function CallModal({
       exit={{
         opacity: 0
       }}
-      className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
-      onClick={handleEndCall}>
+      className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
       
       <motion.div
         initial={{
