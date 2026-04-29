@@ -10,10 +10,11 @@ import {
   MicIcon,
   SquareIcon } from
 'lucide-react';
-import { Message } from '../data/mockData';
+import { Message } from '../../data/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
-import { EmojiPicker } from './EmojiPicker';
-interface MessageInputProps {
+import { EmojiPicker } from '../EmojiPicker';
+
+export interface MessageInputProps {
   onSendMessage: (content: string) => void;
   onSendVoice?: (duration: number) => void;
   replyingTo?: Message;
@@ -71,14 +72,23 @@ export function MessageInput({
     const sec = s % 60;
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
+  // Refs to prevent immediate closing when opening menus
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const attachMenuRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
-    const handleClickOutside = () => {
-      setShowAttachMenu(false);
-      setShowEmojiPicker(false);
+    const handleClickOutside = (e: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+      if (attachMenuRef.current && !attachMenuRef.current.contains(e.target as Node)) {
+        setShowAttachMenu(false);
+      }
     };
+    
     if (showAttachMenu || showEmojiPicker) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [showAttachMenu, showEmojiPicker]);
   useEffect(() => {
@@ -210,12 +220,11 @@ export function MessageInput({
           
             {/* Emoji */}
             <div
-            className="relative flex-shrink-0"
-            onClick={(e) => e.stopPropagation()}>
+            ref={emojiPickerRef}
+            className="relative flex-shrink-0">
             
               <button
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 setShowEmojiPicker(!showEmojiPicker);
                 setShowAttachMenu(false);
               }}
@@ -246,12 +255,11 @@ export function MessageInput({
 
             {/* Attach */}
             <div
-            className="relative flex-shrink-0"
-            onClick={(e) => e.stopPropagation()}>
+            ref={attachMenuRef}
+            className="relative flex-shrink-0">
             
               <button
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 setShowAttachMenu(!showAttachMenu);
                 setShowEmojiPicker(false);
               }}

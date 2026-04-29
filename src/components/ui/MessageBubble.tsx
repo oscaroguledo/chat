@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Message, users, currentUser } from '../data/mockData';
+import { Message, users, currentUser } from '../../data/mockData';
 import {
   CheckIcon,
   CheckCheckIcon,
@@ -15,9 +15,9 @@ import {
   Trash2Icon } from
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AudioPlayer } from './ui/AudioPlayer';
+import { AudioPlayer } from './AudioPlayer';
 import { MediaViewer } from './MediaViewer';
-interface MessageBubbleProps {
+export interface MessageBubbleProps {
   message: Message;
   isOwnMessage: boolean;
   showSenderName?: boolean;

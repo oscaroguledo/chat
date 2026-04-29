@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Chat, Message, users, currentUser } from '../data/mockData';
-import { MessageBubble } from './MessageBubble';
-import { MessageInput } from './MessageInput';
+import { MessageBubble } from './ui/MessageBubble';
+import { MessageInput } from './ui/MessageInput';
 import {
   PhoneIcon,
   VideoIcon,

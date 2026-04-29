@@ -1,7 +1,7 @@
 import React, { useEffect, Component } from 'react';
 import { XIcon, DownloadIcon, ExternalLinkIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-interface MediaViewerProps {
+export interface MediaViewerProps {
   type: 'image' | 'pdf';
   url: string;
   title?: string;

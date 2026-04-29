@@ -22,3 +22,12 @@ export type { CardProps, CardHeaderProps } from './Card';
 
 export { AudioPlayer } from './AudioPlayer';
 export type { AudioPlayerProps } from './AudioPlayer';
+
+export { MessageBubble } from './MessageBubble';
+export type { MessageBubbleProps } from './MessageBubble';
+
+export { MessageInput } from './MessageInput';
+export type { MessageInputProps } from './MessageInput';
+
+export { MediaViewer } from './MediaViewer';
+export type { MediaViewerProps } from './MediaViewer';
