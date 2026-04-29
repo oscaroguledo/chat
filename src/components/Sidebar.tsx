@@ -543,10 +543,10 @@ export function Sidebar({
         </div>
 
         {/* Filter buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           <button
             onClick={() => setChatFilter('all')}
-            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               chatFilter === 'all'
                 ? 'bg-chat-accent text-white'
                 : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
@@ -556,7 +556,7 @@ export function Sidebar({
           </button>
           <button
             onClick={() => setChatFilter('unread')}
-            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               chatFilter === 'unread'
                 ? 'bg-chat-accent text-white'
                 : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
@@ -566,7 +566,7 @@ export function Sidebar({
           </button>
           <button
             onClick={() => setChatFilter('group')}
-            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               chatFilter === 'group'
                 ? 'bg-chat-accent text-white'
                 : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
