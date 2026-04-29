@@ -407,9 +407,9 @@ export function MessageBubble({
               {isGroupChat && !isOwnMessage && (
                 <button
                   onClick={handleReplyPrivately}
-                  className="p-1.5 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-chat-muted dark:text-chat-muted"
+                  className="p-1.5 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-chat-muted dark:text-chat-muted overflow-hidden"
                   title="Reply privately">
-                  <div className="flex items-center gap-1 overflow-hidden">
+                  <div className="flex items-center gap-1 overflow-contain">
                     <ReplyIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted flex-shrink-0" />
                     <img src={sender.avatar} alt={sender.name} className="w-4 h-4 rounded-full flex-shrink-0 object-cover" />
                   </div>
@@ -569,7 +569,7 @@ export function MessageBubble({
                 {isGroupChat && !isOwnMessage && (
                   <button
                   onClick={handleReplyPrivately}
-                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left">
+                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left overflow-hidden"
                     <div className="flex items-center gap-2 overflow-hidden">
                       <ReplyIcon className="w-5 h-5 text-chat-muted dark:text-chat-muted flex-shrink-0" />
                       <img src={sender.avatar} alt={sender.name} className="w-6 h-6 rounded-full flex-shrink-0 object-cover" />
