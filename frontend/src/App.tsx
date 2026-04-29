@@ -8,7 +8,7 @@ import { MobileSettingsView } from '@/components/MobileSettingsView';
 import { MobileProfileView } from '@/components/MobileProfileView';
 import { MobileCallsView } from '@/components/MobileCallsView';
 import { CallModal, CallType } from '@/components/ui/CallModal';
-import { chats, Message, currentUser } from '@/data/mockData';
+import { chats, Message, currentUser, users } from '@/data/mockData';
 import { AnimatePresence } from 'framer-motion';
 interface ActiveCall {
   contactName: string;
@@ -16,7 +16,8 @@ interface ActiveCall {
   callType: CallType;
 }
 export function App() {
-  const [activeChat, setActiveChat] = useState(chats[0]);
+  const [allChats, setAllChats] = useState(chats);
+  const [activeChat, setActiveChat] = useState(() => chats[0]);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
@@ -59,19 +60,42 @@ export function App() {
   // Handle reply privately - opens direct chat with message sender
   const handleReplyPrivately = (senderId: string, quotedMessage: Message) => {
     // Find existing direct chat with sender
-    const directChat = chats.find(
+    const directChat = allChats.find(
       (c) => c.type === 'direct' && c.participants.includes(senderId) && c.participants.includes(currentUser.id)
     );
-    
+
     if (directChat) {
       setActiveChat(directChat);
       setMobileView('chat');
       setShowInfoPanel(false);
     } else {
-      // No direct chat exists - would need to create one
-      // For now, just log or alert (creating requires backend/mock data update)
-      console.warn('No direct chat found with user:', senderId);
-      alert('Direct chat not found. This would create a new chat in a full implementation.');
+      // Create a new direct chat with the sender
+      const sender = users[senderId];
+      const newChatId = `chat-${Date.now()}`;
+      const newMessageId = `msg-${Date.now() + 1}`;
+      const newChat = {
+        id: newChatId,
+        type: 'direct',
+        name: sender.name,
+        avatar: sender.avatar,
+        participants: [currentUser.id, senderId],
+        unreadCount: 0,
+        muted: false,
+        messages: [
+          {
+            id: newMessageId,
+            senderId: senderId,
+            content: quotedMessage.content,
+            timestamp: new Date(),
+            type: 'text'
+          }
+        ]
+      };
+
+      setAllChats((prev) => [newChat, ...prev]);
+      setActiveChat(newChat);
+      setMobileView('chat');
+      setShowInfoPanel(false);
     }
   };
   
@@ -115,7 +139,7 @@ export function App() {
       default:
         return (
           <Sidebar
-            chats={chats}
+            chats={allChats}
             activeChat={activeChat}
             onSelectChat={handleSelectChat}
             onToggleDarkMode={toggleDarkMode}
@@ -139,7 +163,7 @@ export function App() {
       {/* Desktop layout */}
       <div className="hidden md:flex flex-1 overflow-hidden">
         <Sidebar
-          chats={chats}
+          chats={allChats}
           activeChat={activeChat}
           onSelectChat={handleSelectChat}
           onToggleDarkMode={toggleDarkMode}

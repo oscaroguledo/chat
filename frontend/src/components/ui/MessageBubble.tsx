@@ -10,7 +10,6 @@ import {
   ReplyIcon,
   SmilePlusIcon,
   PinIcon,
-  MessageSquareIcon,
   PencilIcon,
   Trash2Icon } from
 'lucide-react';
@@ -410,8 +409,10 @@ export function MessageBubble({
                   onClick={handleReplyPrivately}
                   className="p-1.5 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-chat-muted dark:text-chat-muted"
                   title="Reply privately">
-                  
-                  <MessageSquareIcon className="w-4 h-4" />
+                  <div className="flex items-center gap-1">
+                    <ReplyIcon className="w-4 h-4" />
+                    <img src={sender.avatar} alt={sender.name} className="w-4 h-4 rounded-full" />
+                  </div>
                 </button>
               )}
               <button
@@ -569,8 +570,10 @@ export function MessageBubble({
                   <button
                   onClick={handleReplyPrivately}
                   className="w-full flex items-center gap-3 px-5 py-4 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left">
-                  
-                    <MessageSquareIcon className="w-5 h-5 text-chat-muted dark:text-chat-muted" />
+                    <div className="flex items-center gap-2">
+                      <ReplyIcon className="w-5 h-5 text-chat-muted dark:text-chat-muted" />
+                      <img src={sender.avatar} alt={sender.name} className="w-6 h-6 rounded-full" />
+                    </div>
                     <span className="text-sm font-medium text-chat-text dark:text-chat-text">
                       Reply privately
                     </span>
