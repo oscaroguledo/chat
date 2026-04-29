@@ -12,7 +12,7 @@ import {
 'lucide-react';
 import { Message } from '@/data/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
-import { EmojiPicker } from '@/components/EmojiPicker';
+import { EmojiPicker } from '@/components/ui/EmojiPicker';
 
 export interface MessageInputProps {
   onSendMessage: (content: string, mentions?: string[]) => void;

@@ -16,7 +16,7 @@ import {
   ChevronDownIcon } from
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CallType } from './CallModal';
+import { CallType } from '@/components/ui/CallModal';
 interface ChatWindowProps {
   chat: Chat;
   onToggleInfo: () => void;

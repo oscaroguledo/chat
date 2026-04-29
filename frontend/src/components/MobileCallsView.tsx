@@ -7,7 +7,7 @@ import {
   PhoneMissedIcon } from
 'lucide-react';
 import { users } from '@/data/mockData';
-import { CallType } from './CallModal';
+import { CallType } from '@/components/ui/CallModal';
 interface MobileCallsViewProps {
   onStartCall: (
   contactName: string,

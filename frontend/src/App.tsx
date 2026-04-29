@@ -7,7 +7,7 @@ import { MobileContactsView } from '@/components/MobileContactsView';
 import { MobileSettingsView } from '@/components/MobileSettingsView';
 import { MobileProfileView } from '@/components/MobileProfileView';
 import { MobileCallsView } from '@/components/MobileCallsView';
-import { CallModal, CallType } from '@/components/CallModal';
+import { CallModal, CallType } from '@/components/ui/CallModal';
 import { chats, Message, currentUser } from '@/data/mockData';
 import { AnimatePresence } from 'framer-motion';
 interface ActiveCall {
