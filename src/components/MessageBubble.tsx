@@ -10,7 +10,9 @@ import {
   ReplyIcon,
   SmilePlusIcon,
   PinIcon,
-  MessageSquareIcon } from
+  MessageSquareIcon,
+  PencilIcon,
+  Trash2Icon } from
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AudioPlayer } from './ui/AudioPlayer';
@@ -27,6 +29,8 @@ interface MessageBubbleProps {
   isPinned?: boolean;
   isGroupChat?: boolean;
   onReplyPrivately?: (message: Message) => void;
+  onEdit?: (messageId: string, newContent: string) => void;
+  onDelete?: (messageId: string) => void;
 }
 const quickReactions = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 // YouTube URL detection
@@ -54,7 +58,9 @@ export function MessageBubble({
   onScrollToMessage,
   isPinned,
   isGroupChat,
-  onReplyPrivately
+  onReplyPrivately,
+  onEdit,
+  onDelete
 }: MessageBubbleProps) {
   const sender = users[message.senderId];
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -95,6 +101,37 @@ export function MessageBubble({
     onReplyPrivately?.(message);
     setShowActions(false);
   };
+  
+  // Edit/Delete functionality
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(message.content);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  const handleEdit = () => {
+    if (editContent.trim() && editContent !== message.content) {
+      onEdit?.(message.id, editContent.trim());
+    }
+    setIsEditing(false);
+    setShowActions(false);
+  };
+  
+  const handleDelete = () => {
+    onDelete?.(message.id);
+    setShowDeleteConfirm(false);
+    setShowActions(false);
+  };
+  
+  const startEditing = () => {
+    setEditContent(message.content);
+    setIsEditing(true);
+    setShowActions(false);
+  };
+  
+  const cancelEditing = () => {
+    setEditContent(message.content);
+    setIsEditing(false);
+  };
+  
   const getStatusIcon = () => {
     if (!message.status) return null;
     if (message.status === 'sent') {
@@ -346,6 +383,24 @@ export function MessageBubble({
                 
                 <PinIcon className="w-4 h-4" />
               </button>
+              {isOwnMessage && message.type === 'text' && (
+                <button
+                  onClick={startEditing}
+                  className="p-1.5 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-chat-muted dark:text-chat-muted"
+                  title="Edit">
+                  
+                  <PencilIcon className="w-4 h-4" />
+                </button>
+              )}
+              {isOwnMessage && (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="p-1.5 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-red-500"
+                  title="Delete">
+                  
+                  <Trash2Icon className="w-4 h-4" />
+                </button>
+              )}
             </div>
 
             {/* Desktop reaction picker */}
@@ -506,6 +561,28 @@ export function MessageBubble({
                     More reactions
                   </span>
                 </button>
+                {isOwnMessage && message.type === 'text' && (
+                  <button
+                  onClick={startEditing}
+                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left">
+                  
+                    <PencilIcon className="w-5 h-5 text-chat-muted dark:text-chat-muted" />
+                    <span className="text-sm font-medium text-chat-text dark:text-chat-text">
+                      Edit message
+                    </span>
+                  </button>
+                )}
+                {isOwnMessage && (
+                  <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left">
+                  
+                    <Trash2Icon className="w-5 h-5 text-red-500" />
+                    <span className="text-sm font-medium text-red-500">
+                      Delete message
+                    </span>
+                  </button>
+                )}
               </div>
               <div className="border-t border-chat-border dark:border-chat-border p-3">
                 <button
@@ -529,6 +606,93 @@ export function MessageBubble({
           onClose={() => setViewerOpen(false)} />
 
         }
+      </AnimatePresence>
+
+      {/* Edit Message Modal */}
+      <AnimatePresence>
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={cancelEditing}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-chat-card dark:bg-chat-card rounded-xl w-full max-w-md p-4 shadow-xl"
+            >
+              <h3 className="font-semibold text-chat-text dark:text-chat-text mb-3">
+                Edit Message
+              </h3>
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                className="w-full px-3 py-2 bg-chat-area dark:bg-chat-area rounded-lg outline-none text-chat-text dark:text-chat-text resize-none min-h-[80px]"
+                autoFocus
+              />
+              <div className="flex justify-end gap-2 mt-3">
+                <button
+                  onClick={cancelEditing}
+                  className="px-4 py-2 text-sm font-medium text-chat-muted dark:text-chat-muted hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleEdit}
+                  className="px-4 py-2 text-sm font-medium bg-chat-accent text-white rounded-lg hover:bg-chat-accent/90 transition-colors"
+                >
+                  Save
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-chat-card dark:bg-chat-card rounded-xl w-full max-w-sm p-4 shadow-xl"
+            >
+              <h3 className="font-semibold text-chat-text dark:text-chat-text mb-2">
+                Delete Message
+              </h3>
+              <p className="text-sm text-chat-muted dark:text-chat-muted mb-4">
+                Are you sure you want to delete this message? This action cannot be undone.
+              </p>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2 text-sm font-medium text-chat-muted dark:text-chat-muted hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </>);
 
