@@ -155,6 +155,19 @@ export function ChatWindow({
     setMessages([...messages, newMessage]);
   };
   const handleReply = (message: Message) => setReplyingTo(message);
+  
+  const handleEdit = (messageId: string, newContent: string) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === messageId ? { ...m, content: newContent, edited: true } : m
+      )
+    );
+  };
+  
+  const handleDelete = (messageId: string) => {
+    setMessages((prev) => prev.filter((m) => m.id !== messageId));
+  };
+  
   const handleReact = (messageId: string, emoji: string) => {
     setMessages((prev) =>
     prev.map((m) => {
@@ -512,7 +525,10 @@ export function ChatWindow({
               onReact={handleReact}
               onPin={handlePin}
               onScrollToMessage={scrollToMessage}
-              isPinned={pinnedMessageId === message.id} />
+              isPinned={pinnedMessageId === message.id}
+              isGroupChat={chat.type === 'group'}
+              onEdit={handleEdit}
+              onDelete={handleDelete} />
 
             )}
             </div>
