@@ -12,7 +12,7 @@ import {
   PinIcon } from
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { VoicePlayer } from './VoicePlayer';
+import { AudioPlayer } from './ui/AudioPlayer';
 import { MediaViewer } from './MediaViewer';
 interface MessageBubbleProps {
   message: Message;
@@ -183,10 +183,10 @@ export function MessageBubble({
 
       case 'voice':
         return (
-          <VoicePlayer
+          <AudioPlayer
             url={message.voiceUrl || ''}
             duration={message.voiceDuration}
-            isOwnMessage={isOwnMessage} />);
+            variant={isOwnMessage ? 'primary' : 'secondary'} />);
 
 
       case 'file':
