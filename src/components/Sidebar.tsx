@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Chat, currentUser, users } from '../data/mockData';
+import { Chat, currentUser, users } from '@/data/mockData';
 
 export interface Call {
   id: string;

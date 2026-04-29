@@ -1,5 +1,5 @@
 import React from 'react';
-import { currentUser } from '../data/mockData';
+import { currentUser } from '@/data/mockData';
 import { CameraIcon, PencilIcon } from 'lucide-react';
 export function MobileProfileView() {
   return (

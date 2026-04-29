@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Chat, users, currentUser } from '../data/mockData';
+import { Chat, users, currentUser } from '@/data/mockData';
 import {
   XIcon,
   BellOffIcon,

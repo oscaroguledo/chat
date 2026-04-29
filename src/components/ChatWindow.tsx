@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Chat, Message, users, currentUser } from '../data/mockData';
-import { MessageBubble } from './ui/MessageBubble';
-import { MessageInput } from './ui/MessageInput';
+import { Chat, Message, users, currentUser } from '@/data/mockData';
+import { MessageBubble } from '@/components/ui/MessageBubble';
+import { MessageInput } from '@/components/ui/MessageInput';
 import {
   PhoneIcon,
   VideoIcon,
@@ -111,7 +111,7 @@ export function ChatWindow({
       content,
       timestamp: new Date(),
       status: 'sent',
-      replyToId: replyingTo?.id,
+      replyTo: replyingTo?.id,
       mentions
     };
     setMessages([...messages, newMessage]);

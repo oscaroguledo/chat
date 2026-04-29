@@ -1,5 +1,5 @@
 import React from 'react';
-import { users, currentUser } from '../data/mockData';
+import { users, currentUser } from '@/data/mockData';
 import { SearchIcon } from 'lucide-react';
 export function MobileContactsView() {
   const contactList = Object.values(users).filter(
