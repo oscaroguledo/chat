@@ -1,5 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import { Chat, currentUser, users } from '../data/mockData';
+
+export interface Call {
+  id: string;
+  contactId: string;
+  contactName: string;
+  contactAvatar: string;
+  type: 'incoming' | 'outgoing' | 'missed';
+  callType: 'audio' | 'video';
+  timestamp: Date;
+  duration?: string;
+}
+
+const mockCalls: Call[] = [
+  {
+    id: 'call-1',
+    contactId: 'user-2',
+    contactName: 'Sarah Chen',
+    contactAvatar: users['user-2'].avatar,
+    type: 'incoming',
+    callType: 'video',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    duration: '15:30'
+  },
+  {
+    id: 'call-2',
+    contactId: 'user-3',
+    contactName: 'Marcus Johnson',
+    contactAvatar: users['user-3'].avatar,
+    type: 'outgoing',
+    callType: 'audio',
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+    duration: '8:45'
+  },
+  {
+    id: 'call-3',
+    contactId: 'user-4',
+    contactName: 'Emma Wilson',
+    contactAvatar: users['user-4'].avatar,
+    type: 'missed',
+    callType: 'video',
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
+  },
+  {
+    id: 'call-4',
+    contactId: 'user-7',
+    contactName: 'David Kim',
+    contactAvatar: users['user-7'].avatar,
+    type: 'incoming',
+    callType: 'audio',
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    duration: '4:20'
+  }
+];
 import {
   SearchIcon,
   MoreVerticalIcon,
@@ -17,10 +70,14 @@ import {
   ChevronRightIcon,
   BellIcon,
   CameraIcon,
-  PencilIcon } from
+  PencilIcon,
+  PhoneIcon,
+  PhoneMissedIcon,
+  ArrowDownLeftIcon,
+  ArrowUpRightIcon } from
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-type SidebarView = 'chats' | 'contacts' | 'settings' | 'profile';
+type SidebarView = 'chats' | 'contacts' | 'settings' | 'profile' | 'calls';
 interface SidebarProps {
   chats: Chat[];
   activeChat: Chat;
@@ -38,13 +95,25 @@ export function Sidebar({
   const [searchQuery, setSearchQuery] = useState('');
   const [showMenu, setShowMenu] = useState(false);
   const [view, setView] = useState<SidebarView>('chats');
-  const filteredChats = chats.filter(
-    (chat) =>
-    chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    chat.messages.some((m) =>
-    m.content.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+  const [chatFilter, setChatFilter] = useState<'all' | 'unread' | 'group'>('all');
+  const filteredChats = chats
+    .filter((chat) => {
+      // Apply search filter
+      const matchesSearch = 
+        chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        chat.messages.some((m) =>
+          m.content.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      
+      // Apply type filter
+      if (chatFilter === 'unread') {
+        return matchesSearch && chat.unreadCount > 0;
+      }
+      if (chatFilter === 'group') {
+        return matchesSearch && chat.type === 'group';
+      }
+      return matchesSearch;
+    });
   useEffect(() => {
     if (!showMenu) return;
     const close = () => setShowMenu(false);
@@ -228,6 +297,74 @@ export function Sidebar({
       </>);
 
   };
+  // Calls view
+  const renderCalls = () => {
+    const formatCallTime = (date: Date) => {
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+      if (hours < 24) return `${hours}h ago`;
+      if (days < 7) return `${days}d ago`;
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    };
+
+    const getCallIcon = (call: Call) => {
+      if (call.type === 'missed') {
+        return <PhoneMissedIcon className="w-4 h-4 text-red-500" />;
+      }
+      if (call.type === 'incoming') {
+        return <ArrowDownLeftIcon className="w-4 h-4 text-green-500" />;
+      }
+      return <ArrowUpRightIcon className="w-4 h-4 text-chat-accent" />;
+    };
+
+    return (
+      <>
+        {renderSubHeader('Calls')}
+        <div className="flex-1 overflow-y-auto">
+          {mockCalls.map((call) => (
+            <div
+              key={call.id}
+              className="flex items-center gap-3 p-4 hover:bg-chat-area dark:hover:bg-chat-area transition-colors">
+              <div className="relative flex-shrink-0">
+                <img
+                  src={call.contactAvatar}
+                  alt={call.contactName}
+                  className="w-11 h-11 rounded-full"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-chat-text dark:text-chat-text text-sm">
+                  {call.contactName}
+                </h4>
+                <div className="flex items-center gap-1 mt-0.5">
+                  {getCallIcon(call)}
+                  <span className={`text-xs ${call.type === 'missed' ? 'text-red-500' : 'text-chat-muted dark:text-chat-muted'}`}>
+                    {call.type === 'incoming' ? 'Incoming' : call.type === 'outgoing' ? 'Outgoing' : 'Missed'}
+                  </span>
+                  {call.callType === 'video' && (
+                    <span className="text-xs text-chat-muted dark:text-chat-muted ml-1">• Video</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-1">
+                <span className="text-xs text-chat-muted dark:text-chat-muted">
+                  {formatCallTime(call.timestamp)}
+                </span>
+                {call.duration && (
+                  <span className="text-xs text-chat-muted dark:text-chat-muted">
+                    {call.duration}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  };
+
   // Profile view
   const renderProfile = () =>
   <>
@@ -343,6 +480,11 @@ export function Sidebar({
                 view: 'contacts' as SidebarView
               },
               {
+                icon: PhoneIcon,
+                label: 'Calls',
+                view: 'calls' as SidebarView
+              },
+              {
                 icon: SettingsIcon,
                 label: 'Settings',
                 view: 'settings' as SidebarView
@@ -389,7 +531,7 @@ export function Sidebar({
         </div>
 
         {/* Search */}
-        <div className="relative">
+        <div className="relative mb-3">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-chat-muted dark:text-chat-muted" />
           <input
           type="text"
@@ -398,6 +540,40 @@ export function Sidebar({
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-2 bg-chat-area dark:bg-chat-area rounded-lg outline-none text-sm text-chat-text dark:text-chat-text placeholder-chat-muted dark:placeholder-chat-muted" />
         
+        </div>
+
+        {/* Filter buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setChatFilter('all')}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+              chatFilter === 'all'
+                ? 'bg-chat-accent text-white'
+                : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setChatFilter('unread')}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+              chatFilter === 'unread'
+                ? 'bg-chat-accent text-white'
+                : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
+            }`}
+          >
+            Unread
+          </button>
+          <button
+            onClick={() => setChatFilter('group')}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+              chatFilter === 'group'
+                ? 'bg-chat-accent text-white'
+                : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
+            }`}
+          >
+            Groups
+          </button>
         </div>
       </div>
 
@@ -475,6 +651,7 @@ export function Sidebar({
     <div className="w-full md:w-80 bg-chat-card dark:bg-chat-card md:border-r border-chat-border dark:border-chat-border flex flex-col h-full">
       {view === 'chats' && renderChats()}
       {view === 'contacts' && renderContacts()}
+      {view === 'calls' && renderCalls()}
       {view === 'settings' && renderSettings()}
       {view === 'profile' && renderProfile()}
     </div>);
