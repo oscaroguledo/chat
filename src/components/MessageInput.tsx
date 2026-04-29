@@ -214,7 +214,8 @@ export function MessageInput({
             onClick={(e) => e.stopPropagation()}>
             
               <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setShowEmojiPicker(!showEmojiPicker);
                 setShowAttachMenu(false);
               }}
@@ -249,7 +250,8 @@ export function MessageInput({
             onClick={(e) => e.stopPropagation()}>
             
               <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setShowAttachMenu(!showAttachMenu);
                 setShowEmojiPicker(false);
               }}
@@ -287,6 +289,11 @@ export function MessageInput({
                   icon: VideoIcon,
                   label: 'Video',
                   color: 'text-purple-500'
+                },
+                {
+                  icon: MicIcon,
+                  label: 'Audio',
+                  color: 'text-orange-500'
                 },
                 {
                   icon: FileIcon,
