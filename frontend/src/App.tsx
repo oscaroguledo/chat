@@ -8,7 +8,7 @@ import { MobileSettingsView } from '@/components/MobileSettingsView';
 import { MobileProfileView } from '@/components/MobileProfileView';
 import { MobileCallsView } from '@/components/MobileCallsView';
 import { CallModal, CallType } from '@/components/CallModal';
-import { chats } from '@/data/mockData';
+import { chats, Message, currentUser } from '@/data/mockData';
 import { AnimatePresence } from 'framer-motion';
 interface ActiveCall {
   contactName: string;
@@ -55,6 +55,26 @@ export function App() {
       callType
     });
   };
+  
+  // Handle reply privately - opens direct chat with message sender
+  const handleReplyPrivately = (senderId: string, quotedMessage: Message) => {
+    // Find existing direct chat with sender
+    const directChat = chats.find(
+      (c) => c.type === 'direct' && c.participants.includes(senderId) && c.participants.includes(currentUser.id)
+    );
+    
+    if (directChat) {
+      setActiveChat(directChat);
+      setMobileView('chat');
+      setShowInfoPanel(false);
+    } else {
+      // No direct chat exists - would need to create one
+      // For now, just log or alert (creating requires backend/mock data update)
+      console.warn('No direct chat found with user:', senderId);
+      alert('Direct chat not found. This would create a new chat in a full implementation.');
+    }
+  };
+  
   const renderMobileContent = () => {
     if (mobileView === 'chat') {
       return (
@@ -63,7 +83,8 @@ export function App() {
             chat={activeChat}
             onToggleInfo={() => setShowInfoPanel(!showInfoPanel)}
             onBack={handleMobileBack}
-            onStartCall={handleStartCall} />
+            onStartCall={handleStartCall}
+            onReplyPrivately={handleReplyPrivately} />
           
           <AnimatePresence>
             {showInfoPanel &&
@@ -127,7 +148,8 @@ export function App() {
         <ChatWindow
           chat={activeChat}
           onToggleInfo={() => setShowInfoPanel(!showInfoPanel)}
-          onStartCall={handleStartCall} />
+          onStartCall={handleStartCall}
+          onReplyPrivately={handleReplyPrivately} />
         
         <AnimatePresence>
           {showInfoPanel &&

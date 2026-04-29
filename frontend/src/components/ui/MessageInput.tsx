@@ -378,7 +378,7 @@ export function MessageInput({
               {showMentionList && (members.length > 0 || isGroupChat) && (
                 <div
                   ref={mentionRef}
-                  className="absolute bottom-full left-0 mb-2 w-64 max-h-64 overflow-y-auto bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg z-50"
+                  className="absolute bottom-full left-0 mb-2 w-64 max-h-64 overflow-y-auto bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg z-[55]"
                 >
                   {isGroupChat && (
                     <button
@@ -458,7 +458,7 @@ export function MessageInput({
                   y: 10,
                   scale: 0.95
                 }}
-                className="absolute bottom-full right-0 mb-2 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg overflow-hidden z-30 min-w-[160px]">
+                className="absolute bottom-full right-0 mb-2 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg overflow-hidden z-[55] min-w-[160px]">
                 
                     {[
                 {

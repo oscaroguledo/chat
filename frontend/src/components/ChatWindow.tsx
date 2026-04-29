@@ -26,12 +26,14 @@ interface ChatWindowProps {
   contactAvatar: string,
   callType: CallType)
   => void;
+  onReplyPrivately?: (senderId: string, quotedMessage: Message) => void;
 }
 export function ChatWindow({
   chat,
   onToggleInfo,
   onBack,
-  onStartCall
+  onStartCall,
+  onReplyPrivately
 }: ChatWindowProps) {
   const [messages, setMessages] = useState(chat.messages);
   const [replyingTo, setReplyingTo] = useState<Message | undefined>();
@@ -155,6 +157,12 @@ export function ChatWindow({
     setMessages([...messages, newMessage]);
   };
   const handleReply = (message: Message) => setReplyingTo(message);
+  
+  const handleReplyPrivately = (message: Message) => {
+    if (onReplyPrivately) {
+      onReplyPrivately(message.senderId, message);
+    }
+  };
   
   const handleEdit = (messageId: string, newContent: string) => {
     setMessages((prev) =>
@@ -528,7 +536,8 @@ export function ChatWindow({
               isPinned={pinnedMessageId === message.id}
               isGroupChat={chat.type === 'group'}
               onEdit={handleEdit}
-              onDelete={handleDelete} />
+              onDelete={handleDelete}
+              onReplyPrivately={handleReplyPrivately} />
 
             )}
             </div>
