@@ -1174,7 +1174,7 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
         y: 10,
         scale: 0.95
       }}
-      className="absolute bottom-full left-0 mb-2 w-80 max-w-[calc(100vw-2rem)] bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-2xl overflow-hidden z-[60]"
+      className="w-80 max-w-[calc(100vw-2rem)] bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-2xl overflow-hidden"
       onClick={(e) => e.stopPropagation()}>
       
       {/* Search */}

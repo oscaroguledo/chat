@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   SmileIcon,
   PaperclipIcon,
@@ -354,11 +355,17 @@ export function MessageInput({
               </button>
               <AnimatePresence>
                 {showEmojiPicker &&
-              <EmojiPicker
-                onSelect={handleEmojiSelect}
-                onClose={() => setShowEmojiPicker(false)} />
-
-              }
+                  createPortal(
+                    <div className="fixed inset-0 z-[9998]" onClick={() => setShowEmojiPicker(false)}>
+                      <div className="absolute" style={{ bottom: '80px', left: '16px' }} onClick={(e) => e.stopPropagation()}>
+                        <EmojiPicker
+                          onSelect={handleEmojiSelect}
+                          onClose={() => setShowEmojiPicker(false)} />
+                      </div>
+                    </div>,
+                    document.body
+                  )
+                }
               </AnimatePresence>
             </div>
 
