@@ -352,6 +352,30 @@ export function ChatWindow({
                 className="absolute right-0 top-full mt-1 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg overflow-hidden z-30 min-w-[180px]">
                 
                   <button
+                  onClick={() => {
+                    handleCall('voice');
+                    setShowMenu(false);
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
+                  
+                    <PhoneIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
+                    <span className="text-sm text-chat-text dark:text-chat-text">
+                      Voice call
+                    </span>
+                  </button>
+                  <button
+                  onClick={() => {
+                    handleCall('video');
+                    setShowMenu(false);
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
+                  
+                    <VideoIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
+                    <span className="text-sm text-chat-text dark:text-chat-text">
+                      Video call
+                    </span>
+                  </button>
+                  <button
                   onClick={handleClearHistory}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
                   
