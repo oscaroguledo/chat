@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { createPortal } from 'react-dom';
+// render simple modals inline (no portal)
 import {
   SmileIcon,
   PaperclipIcon,
@@ -192,26 +192,22 @@ export function MessageInput({
   };
   // Refs to prevent immediate closing when opening menus
   const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const emojiButtonRef = useRef<HTMLButtonElement>(null);
   const attachMenuRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
-        setShowEmojiPicker(false);
-      }
-      if (attachMenuRef.current && !attachMenuRef.current.contains(e.target as Node)) {
-        setShowAttachMenu(false);
-      }
-      if (mentionRef.current && !mentionRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (mentionRef.current && !mentionRef.current.contains(target)) {
         setShowMentionList(false);
       }
     };
-    
-    if (showAttachMenu || showEmojiPicker || showMentionList) {
+
+    if (showMentionList) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [showAttachMenu, showEmojiPicker, showMentionList]);
+  }, [showMentionList]);
   useEffect(() => {
     return () => {
       if (recordingInterval.current) clearInterval(recordingInterval.current);
@@ -345,27 +341,24 @@ export function MessageInput({
             className="relative flex-shrink-0">
             
               <button
-              onClick={() => {
-                setShowEmojiPicker(!showEmojiPicker);
-                setShowAttachMenu(false);
-              }}
-              className={`p-2.5 transition-colors ${showEmojiPicker ? 'text-chat-accent' : 'text-chat-muted dark:text-chat-muted hover:text-chat-text dark:hover:text-chat-text'}`}>
-              
+                ref={emojiButtonRef}
+                onClick={() => {
+                  setShowEmojiPicker(!showEmojiPicker);
+                  setShowAttachMenu(false);
+                }}
+                className={`p-2.5 transition-colors ${showEmojiPicker ? 'text-chat-accent' : 'text-chat-muted dark:text-chat-muted hover:text-chat-text dark:hover:text-chat-text'}`}>
                 <SmileIcon className="w-5 h-5" />
               </button>
               <AnimatePresence>
-                {showEmojiPicker &&
-                  createPortal(
-                    <div className="fixed inset-0 z-[9998]" onClick={() => setShowEmojiPicker(false)}>
-                      <div className="absolute" style={{ bottom: '80px', left: '16px' }} onClick={(e) => e.stopPropagation()}>
-                        <EmojiPicker
-                          onSelect={handleEmojiSelect}
-                          onClose={() => setShowEmojiPicker(false)} />
-                      </div>
-                    </div>,
-                    document.body
-                  )
-                }
+                {showEmojiPicker && (
+                  <div className="fixed inset-0 z-[9998]" onClick={() => setShowEmojiPicker(false)}>
+                    <div className="absolute bottom-24 left-4" onClick={(e) => e.stopPropagation()}>
+                      <EmojiPicker
+                        onSelect={handleEmojiSelect}
+                        onClose={() => setShowEmojiPicker(false)} />
+                    </div>
+                  </div>
+                )}
               </AnimatePresence>
             </div>
 
@@ -378,7 +371,7 @@ export function MessageInput({
               onKeyDown={handleKeyDown}
               onKeyPress={handleKeyPress}
               placeholder="Message"
-              className="w-full py-2.5 bg-transparent resize-none outline-none text-chat-text dark:text-chat-text placeholder-chat-muted dark:placeholder-chat-muted text-sm leading-5 max-h-28"
+              className="w-full  bg-transparent resize-none outline-none text-chat-text dark:text-chat-text placeholder-chat-muted dark:placeholder-chat-muted text-sm leading-5 max-h-28"
               rows={1} />
               
               {/* Mention List Dropdown */}
@@ -438,70 +431,71 @@ export function MessageInput({
             ref={attachMenuRef}
             className="relative flex-shrink-0">
             
-              <button
-              onClick={() => {
-                setShowAttachMenu(!showAttachMenu);
-                setShowEmojiPicker(false);
-              }}
-              className="p-2.5 text-chat-muted dark:text-chat-muted hover:text-chat-text dark:hover:text-chat-text transition-colors">
-              
-                <PaperclipIcon className="w-5 h-5" />
-              </button>
-              <AnimatePresence>
-                {showAttachMenu &&
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 10,
-                  scale: 0.95
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  scale: 1
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  scale: 0.95
-                }}
-                className="absolute bottom-full right-0 mb-2 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg overflow-hidden z-[55] min-w-[160px]">
-                
-                    {[
-                {
-                  icon: ImageIcon,
-                  label: 'Photo',
-                  color: 'text-blue-500'
-                },
-                {
-                  icon: VideoIcon,
-                  label: 'Video',
-                  color: 'text-purple-500'
-                },
-                {
-                  icon: MicIcon,
-                  label: 'Audio',
-                  color: 'text-orange-500'
-                },
-                {
-                  icon: FileIcon,
-                  label: 'File',
-                  color: 'text-green-500'
-                }].
-                map(({ icon: Icon, label, color }) =>
                 <button
-                  key={label}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
-                  
-                        <Icon className={`w-5 h-5 ${color}`} />
-                        <span className="text-sm text-chat-text dark:text-chat-text">
-                          {label}
-                        </span>
-                      </button>
-                )}
-                  </motion.div>
-              }
-              </AnimatePresence>
+                  onClick={() => {
+                    setShowAttachMenu(!showAttachMenu);
+                    setShowEmojiPicker(false);
+                  }}
+                  className="p-2.5 text-chat-muted dark:text-chat-muted hover:text-chat-text dark:hover:text-chat-text transition-colors">
+                  <PaperclipIcon className="w-5 h-5" />
+                </button>
+                <AnimatePresence>
+                  {showAttachMenu && (
+                    <div className="fixed inset-0 z-[9998]" onClick={() => setShowAttachMenu(false)}>
+                      <div className="absolute bottom-24 right-4" onClick={(e) => e.stopPropagation()}>
+                        <motion.div
+                          initial={{
+                            opacity: 0,
+                            y: 10,
+                            scale: 0.95
+                          }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            scale: 1
+                          }}
+                          exit={{
+                            opacity: 0,
+                            y: 10,
+                            scale: 0.95
+                          }}
+                          className="bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg overflow-hidden z-[55] min-w-[160px]">
+                          {[
+                            {
+                              icon: ImageIcon,
+                              label: 'Photo',
+                              color: 'text-blue-500'
+                            },
+                            {
+                              icon: VideoIcon,
+                              label: 'Video',
+                              color: 'text-purple-500'
+                            },
+                            {
+                              icon: MicIcon,
+                              label: 'Audio',
+                              color: 'text-orange-500'
+                            },
+                            {
+                              icon: FileIcon,
+                              label: 'File',
+                              color: 'text-green-500'
+                            }
+                          ].map(({ icon: Icon, label, color }) => (
+                            <button
+                              key={label}
+                              className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
+                              <Icon className={`w-5 h-5 ${color}`} />
+                              <span className="text-sm text-chat-text dark:text-chat-text">
+                                {label}
+                              </span>
+                            </button>
+                          ))}
+                        </motion.div>
+                      </div>
+                    </div>
+                  )}
+                </AnimatePresence>
             </div>
           </div>
 

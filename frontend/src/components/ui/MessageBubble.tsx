@@ -16,7 +16,8 @@ import {
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
-import { MediaViewer } from '@/components/ui/MediaViewer';
+import { ImageViewer } from '@/components/ui/ImageViewer';
+import { FileViewer } from '@/components/ui/FileViewer';
 export interface MessageBubbleProps {
   message: Message;
   isOwnMessage: boolean;
@@ -70,20 +71,55 @@ export function MessageBubble({
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+
   const openViewer = (type: 'image' | 'pdf', url: string) => {
     setViewerType(type);
     setViewerUrl(url);
     setViewerOpen(true);
   };
-  const handleTouchStart = () => {
-    longPressTimer.current = setTimeout(() => setShowActions(true), 500);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+    longPressTimer.current = setTimeout(() => {
+      setShowActions(true);
+      // Add haptic feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 600);
   };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartPos.current || !longPressTimer.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    // Cancel long press if moved more than 10px
+    if (deltaX > 10 || deltaY > 10) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+      touchStartPos.current = null;
+    }
+  };
+
   const handleTouchEnd = () => {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
     }
+    touchStartPos.current = null;
   };
+
+  // Right-click context menu for desktop
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowActions(true);
+  };
+
   const handleReact = (emoji: string) => {
     onReact?.(message.id, emoji);
     setShowReactionPicker(false);
@@ -344,8 +380,10 @@ export function MessageBubble({
             ref={bubbleRef}
             className="relative group"
             onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            onTouchCancel={handleTouchEnd}>
+            onTouchCancel={handleTouchEnd}
+            onContextMenu={handleContextMenu}>
             
             {renderMessageContent()}
 
@@ -598,14 +636,21 @@ export function MessageBubble({
       </AnimatePresence>
 
       <AnimatePresence>
-        {viewerOpen &&
-        <MediaViewer
-          type={viewerType}
-          url={viewerUrl}
-          title={message.fileName || message.content}
-          onClose={() => setViewerOpen(false)} />
-
-        }
+        {viewerOpen && (
+          viewerType === 'image' ? (
+            <ImageViewer
+              url={viewerUrl}
+              alt={message.fileName || message.content}
+              isOpen={viewerOpen}
+              onClose={() => setViewerOpen(false)} />
+          ) : (
+            <FileViewer
+              url={viewerUrl}
+              fileName={message.fileName || message.content}
+              isOpen={viewerOpen}
+              onClose={() => setViewerOpen(false)} />
+          )
+        )}
       </AnimatePresence>
 
       {/* Edit Message Modal */}
