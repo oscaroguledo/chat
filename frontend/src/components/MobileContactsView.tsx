@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { users, currentUser } from '@/data/mockData';
-import { SearchIcon } from 'lucide-react';
+import { SearchIcon, UserPlusIcon } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+
 export function MobileContactsView() {
   const [filter, setFilter] = useState<'all' | 'blocked'>('all');
   const contactList = Object.values(users).filter(
@@ -25,16 +27,18 @@ export function MobileContactsView() {
           
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${filter === 'all' ? 'bg-chat-accent text-white' : 'bg-chat-area dark:bg-chat-area text-chat-text dark:text-chat-text'}`}>
+          <Button
+            variant={filter === 'all' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setFilter('all')}>
             All
-          </button>
-          <button
-            onClick={() => setFilter('blocked')}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${filter === 'blocked' ? 'bg-red-500 text-white' : 'bg-chat-area dark:bg-chat-area text-chat-text dark:text-chat-text'}`}>
+          </Button>
+          <Button
+            variant={filter === 'blocked' ? 'danger' : 'ghost'}
+            size="sm"
+            onClick={() => setFilter('blocked')}>
             Blocked
-          </button>
+          </Button>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">

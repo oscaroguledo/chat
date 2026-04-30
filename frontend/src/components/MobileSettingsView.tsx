@@ -16,6 +16,7 @@ import {
   VibrateIcon } from
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/Button';
 interface MobileSettingsViewProps {
   darkMode: boolean;
   onToggleDarkMode: () => void;
@@ -170,7 +171,7 @@ export function MobileSettingsView({
               {group.items.map((item, idx) => {
               const Icon = item.icon;
               return (
-                <button
+                <Button
                   key={idx}
                   onClick={item.action || (() => {})}
                   className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left border-b border-chat-border/50 dark:border-chat-border/50 last:border-b-0">
@@ -187,7 +188,7 @@ export function MobileSettingsView({
                     }
                     </div>
                     {item.action && <ChevronRightIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted flex-shrink-0" />}
-                  </button>);
+                  </Button>);
 
             })}
             </div>
@@ -214,9 +215,9 @@ export function MobileSettingsView({
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-chat-text dark:text-chat-text">Notifications</h3>
-                <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-chat-area rounded-full">
+                <Button variant="ghost" size="sm" onClick={() => setActiveModal(null)} className="p-2 rounded-full">
                   <XIcon className="w-5 h-5 text-chat-muted" />
-                </button>
+                </Button>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between py-2">
@@ -229,7 +230,7 @@ export function MobileSettingsView({
                     className={`w-12 h-6 rounded-full transition-colors ${settings.notifications.sound ? 'bg-chat-accent' : 'bg-chat-border'}`}
                   >
                     <div className={`w-5 h-5 bg-white rounded-full transition-transform ${settings.notifications.sound ? 'translate-x-6' : 'translate-x-0.5'} mt-0.5`} />
-                  </button>
+                  </Button>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-3">
@@ -241,7 +242,7 @@ export function MobileSettingsView({
                     className={`w-12 h-6 rounded-full transition-colors ${settings.notifications.vibration ? 'bg-chat-accent' : 'bg-chat-border'}`}
                   >
                     <div className={`w-5 h-5 bg-white rounded-full transition-transform ${settings.notifications.vibration ? 'translate-x-6' : 'translate-x-0.5'} mt-0.5`} />
-                  </button>
+                  </Button>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-3">
@@ -253,7 +254,7 @@ export function MobileSettingsView({
                     className={`w-12 h-6 rounded-full transition-colors ${settings.notifications.messagePreview ? 'bg-chat-accent' : 'bg-chat-border'}`}
                   >
                     <div className={`w-5 h-5 bg-white rounded-full transition-transform ${settings.notifications.messagePreview ? 'translate-x-6' : 'translate-x-0.5'} mt-0.5`} />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -280,9 +281,9 @@ export function MobileSettingsView({
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-chat-text dark:text-chat-text">Privacy</h3>
-                <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-chat-area rounded-full">
+                <Button variant="ghost" size="sm" onClick={() => setActiveModal(null)} className="p-2 rounded-full">
                   <XIcon className="w-5 h-5 text-chat-muted" />
-                </button>
+                </Button>
               </div>
               <div className="space-y-6">
                 <div>
@@ -296,7 +297,7 @@ export function MobileSettingsView({
                       >
                         <span className="capitalize text-chat-text dark:text-chat-text">{option}</span>
                         {settings.privacy.lastSeen === option && <CheckIcon className="w-5 h-5 text-chat-accent" />}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -311,7 +312,7 @@ export function MobileSettingsView({
                       >
                         <span className="capitalize text-chat-text dark:text-chat-text">{option}</span>
                         {settings.privacy.profilePhoto === option && <CheckIcon className="w-5 h-5 text-chat-accent" />}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -322,7 +323,7 @@ export function MobileSettingsView({
                     className={`w-12 h-6 rounded-full transition-colors ${settings.privacy.readReceipts ? 'bg-chat-accent' : 'bg-chat-border'}`}
                   >
                     <div className={`w-5 h-5 bg-white rounded-full transition-transform ${settings.privacy.readReceipts ? 'translate-x-6' : 'translate-x-0.5'} mt-0.5`} />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -349,9 +350,9 @@ export function MobileSettingsView({
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-chat-text dark:text-chat-text">Language</h3>
-                <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-chat-area rounded-full">
+                <Button variant="ghost" size="sm" onClick={() => setActiveModal(null)} className="p-2 rounded-full">
                   <XIcon className="w-5 h-5 text-chat-muted" />
-                </button>
+                </Button>
               </div>
               <div className="space-y-1">
                 {languages.map(lang => (
@@ -365,7 +366,7 @@ export function MobileSettingsView({
                   >
                     <span className="text-chat-text dark:text-chat-text">{lang}</span>
                     {settings.language === lang && <CheckIcon className="w-5 h-5 text-chat-accent" />}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </motion.div>
@@ -392,9 +393,9 @@ export function MobileSettingsView({
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-chat-text dark:text-chat-text">Chat Wallpaper</h3>
-                <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-chat-area rounded-full">
+                <Button variant="ghost" size="sm" onClick={() => setActiveModal(null)} className="p-2 rounded-full">
                   <XIcon className="w-5 h-5 text-chat-muted" />
-                </button>
+                </Button>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {wallpapers.map(wp => (
@@ -413,7 +414,7 @@ export function MobileSettingsView({
                         <CheckIcon className="w-3 h-3 text-white" />
                       </div>
                     )}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </motion.div>
@@ -440,9 +441,9 @@ export function MobileSettingsView({
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-chat-text dark:text-chat-text">Two-Factor Authentication</h3>
-                <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-chat-area rounded-full">
+                <Button variant="ghost" size="sm" onClick={() => setActiveModal(null)} className="p-2 rounded-full">
                   <XIcon className="w-5 h-5 text-chat-muted" />
-                </button>
+                </Button>
               </div>
               <div className="text-center py-4">
                 <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${settings.twoFactorEnabled ? 'bg-green-100 dark:bg-green-900' : 'bg-yellow-100 dark:bg-yellow-900'}`}>
@@ -456,16 +457,12 @@ export function MobileSettingsView({
                     ? 'Your account is protected with an additional layer of security.' 
                     : 'Enable 2FA to add an extra layer of security to your account.'}
                 </p>
-                <button
-                  onClick={() => setSettings(prev => ({ ...prev, twoFactorEnabled: !prev.twoFactorEnabled }))}
-                  className={`w-full py-3 rounded-xl font-medium transition-colors ${
-                    settings.twoFactorEnabled 
-                      ? 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800' 
-                      : 'bg-chat-accent text-white hover:bg-chat-accent/90'
-                  }`}
-                >
+                <Button
+                  variant={settings.twoFactorEnabled ? 'danger' : 'primary'}
+                  fullWidth
+                  onClick={() => setSettings(prev => ({ ...prev, twoFactorEnabled: !prev.twoFactorEnabled }))}>
                   {settings.twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}
-                </button>
+                </Button>
               </div>
             </motion.div>
           </motion.div>

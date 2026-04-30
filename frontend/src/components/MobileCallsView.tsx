@@ -8,6 +8,7 @@ import {
 'lucide-react';
 import { users } from '@/data/mockData';
 import { CallType } from '@/components/ui/CallModal';
+import { Button } from '@/components/ui/Button';
 interface MobileCallsViewProps {
   onStartCall: (
   contactName: string,
@@ -119,18 +120,18 @@ export function MobileCallsView({ onStartCall }: MobileCallsViewProps) {
           Calls
         </h2>
         <div className="flex gap-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${filter === 'all' ? 'bg-chat-accent text-white' : 'bg-chat-area dark:bg-chat-area text-chat-text dark:text-chat-text'}`}>
-            
+          <Button
+            variant={filter === 'all' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setFilter('all')}>
             All
-          </button>
-          <button
-            onClick={() => setFilter('missed')}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${filter === 'missed' ? 'bg-chat-accent text-white' : 'bg-chat-area dark:bg-chat-area text-chat-text dark:text-chat-text'}`}>
-            
+          </Button>
+          <Button
+            variant={filter === 'missed' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setFilter('missed')}>
             Missed
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Chat, currentUser, users } from '@/data/mockData';
+import { Button } from '@/components/ui/Button';
 
 export interface Call {
   id: string;
@@ -175,16 +176,18 @@ export function Sidebar({
       {renderSubHeader('Contacts')}
       <div className="px-4 py-2 border-b border-chat-border dark:border-chat-border">
         <div className="flex gap-1.5">
-          <button
-            onClick={() => setContactFilter('all')}
-            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${contactFilter === 'all' ? 'bg-chat-accent text-white' : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'}`}>
+          <Button
+            variant={contactFilter === 'all' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setContactFilter('all')}>
             All
-          </button>
-          <button
-            onClick={() => setContactFilter('blocked')}
-            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${contactFilter === 'blocked' ? 'bg-red-500 text-white' : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-red-500/10'}`}>
+          </Button>
+          <Button
+            variant={contactFilter === 'blocked' ? 'danger' : 'ghost'}
+            size="sm"
+            onClick={() => setContactFilter('blocked')}>
             Blocked
-          </button>
+          </Button>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -352,16 +355,18 @@ export function Sidebar({
         {renderSubHeader('Calls')}
         <div className="px-4 py-2 border-b border-chat-border dark:border-chat-border">
           <div className="flex gap-1.5">
-            <button
-              onClick={() => setCallFilter('all')}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${callFilter === 'all' ? 'bg-chat-accent text-white' : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'}`}>
+            <Button
+              variant={callFilter === 'all' ? 'primary' : 'ghost'}
+              size="sm"
+              onClick={() => setCallFilter('all')}>
               All
-            </button>
-            <button
-              onClick={() => setCallFilter('missed')}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${callFilter === 'missed' ? 'bg-red-500 text-white' : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-red-500/10'}`}>
+            </Button>
+            <Button
+              variant={callFilter === 'missed' ? 'danger' : 'ghost'}
+              size="sm"
+              onClick={() => setCallFilter('missed')}>
               Missed
-            </button>
+            </Button>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto">
@@ -578,36 +583,24 @@ export function Sidebar({
 
         {/* Filter buttons */}
         <div className="flex gap-1.5">
-          <button
-            onClick={() => setChatFilter('all')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              chatFilter === 'all'
-                ? 'bg-chat-accent text-white'
-                : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
-            }`}
-          >
+          <Button
+            variant={chatFilter === 'all' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setChatFilter('all')}>
             All
-          </button>
-          <button
-            onClick={() => setChatFilter('unread')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              chatFilter === 'unread'
-                ? 'bg-chat-accent text-white'
-                : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
-            }`}
-          >
+          </Button>
+          <Button
+            variant={chatFilter === 'unread' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setChatFilter('unread')}>
             Unread
-          </button>
-          <button
-            onClick={() => setChatFilter('group')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              chatFilter === 'group'
-                ? 'bg-chat-accent text-white'
-                : 'bg-chat-area dark:bg-chat-area text-chat-muted dark:text-chat-muted hover:bg-chat-accent/10'
-            }`}
-          >
+          </Button>
+          <Button
+            variant={chatFilter === 'group' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setChatFilter('group')}>
             Groups
-          </button>
+          </Button>
         </div>
       </div>
 
