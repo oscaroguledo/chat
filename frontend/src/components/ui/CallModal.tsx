@@ -395,6 +395,7 @@ export function CallModal({
             }
           </div>
         </div>
+        )}
 
         {/* Controls */}
         {callState !== 'ended' &&
