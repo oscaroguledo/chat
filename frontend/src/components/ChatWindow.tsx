@@ -28,6 +28,7 @@ interface ChatWindowProps {
   => void;
   onReplyPrivately?: (senderId: string, quotedMessage: Message) => void;
   initialScrollToMessageId?: string;
+  initialReplyToMessage?: Message;
 }
 export function ChatWindow({
   chat,
@@ -35,7 +36,8 @@ export function ChatWindow({
   onBack,
   onStartCall,
   onReplyPrivately,
-  initialScrollToMessageId
+  initialScrollToMessageId,
+  initialReplyToMessage
 }: ChatWindowProps) {
   const [messages, setMessages] = useState(chat.messages);
   const [replyingTo, setReplyingTo] = useState<Message | undefined>();
@@ -52,12 +54,14 @@ export function ChatWindow({
   const searchInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     setMessages(chat.messages);
-    setReplyingTo(undefined);
+    setReplyingTo(initialReplyToMessage);
     setShowMenu(false);
     setPinnedMessageId(chat.pinnedMessageId);
     setShowSearch(false);
     setSearchQuery('');
-  }, [chat.id]);
+    setSearchResults([]);
+    setSearchIndex(0);
+  }, [chat, initialReplyToMessage]);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
       behavior: 'smooth'

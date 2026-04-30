@@ -24,6 +24,8 @@ export function App() {
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
   const [mobileTab, setMobileTab] = useState<MobileTab>('chats');
   const [activeCall, setActiveCall] = useState<ActiveCall | null>(null);
+  // Store the message to reply to when using "Reply Privately" feature
+  const [replyToMessage, setReplyToMessage] = useState<Message | undefined>(undefined);
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -31,6 +33,15 @@ export function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Clear replyToMessage after it's consumed by chat change
+  useEffect(() => {
+    if (replyToMessage) {
+      // Small delay to ensure ChatWindow receives it first
+      const timer = setTimeout(() => setReplyToMessage(undefined), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [activeChat, replyToMessage]);
   const handleSelectChat = (chat: typeof activeChat) => {
     setActiveChat(chat);
     setMobileView('chat');
@@ -60,56 +71,38 @@ export function App() {
   
   // Handle reply privately - opens direct chat with message sender
   const handleReplyPrivately = (senderId: string, quotedMessage: Message) => {
-    // Find existing direct chat with sender
-    const directChat = allChats.find(
-      (c) => c.type === 'direct' && c.participants.includes(senderId) && c.participants.includes(currentUser.id)
+    // Check if direct chat already exists with sender
+    const existingChat = allChats.find(
+      c => c.type === 'direct' && 
+      c.participants.includes(currentUser.id) && 
+      c.participants.includes(senderId)
     );
-
-    const newMessageId = `msg-${Date.now() + 1}`;
-    const newMessage = {
-      id: newMessageId,
-      senderId: senderId,
-      content: quotedMessage.content,
-      timestamp: new Date(),
-      type: 'text'
-    };
-
-    if (directChat) {
-      // Append the quoted message into the existing direct chat so it appears there
-      const updatedChats = allChats.map((c) => c.id === directChat.id ? { ...c, messages: [...c.messages, newMessage] } : c);
-      const updatedChat = updatedChats.find((c) => c.id === directChat.id)!;
-      setAllChats(updatedChats);
-      setActiveChat(updatedChat);
-      setScrollToMessageId(newMessageId);
+    
+    // Store the message we want to reply to
+    setReplyToMessage(quotedMessage);
+    
+    if (existingChat) {
+      setActiveChat(existingChat);
       setMobileView('chat');
       setShowInfoPanel(false);
     } else {
-      // Create a new direct chat with the sender
+      // Create new direct chat
       const sender = users[senderId];
-      const newChatId = `chat-${Date.now()}`;
-      const newMessageId = `msg-${Date.now() + 1}`;
+      if (!sender) return;
+      
       const newChat = {
-        id: newChatId,
-        type: 'direct',
+        id: `direct-${Date.now()}`,
+        type: 'direct' as const,
         name: sender.name,
         avatar: sender.avatar,
         participants: [currentUser.id, senderId],
         unreadCount: 0,
         muted: false,
-        messages: [
-          {
-            id: newMessageId,
-            senderId: senderId,
-            content: quotedMessage.content,
-            timestamp: new Date(),
-            type: 'text'
-          }
-        ]
+        messages: []
       };
 
       setAllChats((prev) => [newChat, ...prev]);
       setActiveChat(newChat);
-      setScrollToMessageId(newMessageId);
       setMobileView('chat');
       setShowInfoPanel(false);
     }
@@ -122,6 +115,7 @@ export function App() {
           <ChatWindow
             chat={activeChat}
             initialScrollToMessageId={scrollToMessageId}
+            initialReplyToMessage={replyToMessage}
             onToggleInfo={() => setShowInfoPanel(!showInfoPanel)}
             onBack={handleMobileBack}
             onStartCall={handleStartCall}
@@ -189,6 +183,7 @@ export function App() {
         <ChatWindow
           chat={activeChat}
           initialScrollToMessageId={scrollToMessageId}
+          initialReplyToMessage={replyToMessage}
           onToggleInfo={() => setShowInfoPanel(!showInfoPanel)}
           onStartCall={handleStartCall}
           onReplyPrivately={handleReplyPrivately} />
