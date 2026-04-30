@@ -34,18 +34,12 @@ export function App() {
     }
   }, [darkMode]);
 
-  // Clear replyToMessage after it's consumed by chat change
-  useEffect(() => {
-    if (replyToMessage) {
-      // Small delay to ensure ChatWindow receives it first
-      const timer = setTimeout(() => setReplyToMessage(undefined), 100);
-      return () => clearTimeout(timer);
-    }
-  }, [activeChat, replyToMessage]);
   const handleSelectChat = (chat: typeof activeChat) => {
     setActiveChat(chat);
     setMobileView('chat');
     setShowInfoPanel(false);
+    // Clear any pending reply when switching chats normally
+    setReplyToMessage(undefined);
   };
   const handleMobileBack = () => {
     setMobileView('list');
