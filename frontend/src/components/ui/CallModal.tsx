@@ -302,14 +302,23 @@ export function CallModal({
             {/* Video Feed - Self View for Video Calls */}
             {callType === 'video' && callState === 'connected' ? (
               isCameraOn && hasPermission ? (
-                <div className="w-28 h-28 rounded-full border-4 border-white/10 overflow-hidden bg-slate-700">
+                <div className="w-28 h-28 rounded-full border-4 border-white/10 overflow-hidden bg-black">
                   <video
                     ref={localVideoRef}
                     autoPlay
                     muted
                     playsInline
+                    width="112"
+                    height="112"
                     className="w-full h-full object-cover"
-                    style={{ transform: isFrontCamera ? 'scaleX(-1)' : 'none' }}
+                    style={{ 
+                      transform: isFrontCamera ? 'scaleX(-1)' : 'none',
+                      minWidth: '100%',
+                      minHeight: '100%'
+                    }}
+                    onLoadedMetadata={(e) => console.log('Video metadata loaded', e.currentTarget.videoWidth, e.currentTarget.videoHeight)}
+                    onPlay={(e) => console.log('Video started playing')}
+                    onError={(e) => console.error('Video error', e)}
                   />
                 </div>
               ) : (
