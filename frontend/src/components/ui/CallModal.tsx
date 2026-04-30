@@ -287,75 +287,86 @@ export function CallModal({
           </button>
         </div>
 
-        {/* Contact */}
-        <div className="flex flex-col items-center px-6 pb-8">
-          {/* Permission Error */}
-          {permissionError && (
-            <div className="mb-4 px-4 py-2 bg-red-500/20 border border-red-500/50 rounded-lg">
-              <p className="text-red-400 text-sm text-center">
-                Camera/Mic access denied. Check browser permissions.
-              </p>
-            </div>
-          )}
-          
-          <div className="relative mb-5">
-            {/* Video Feed - Self View for Video Calls */}
-            {callType === 'video' && callState === 'connected' ? (
-              isCameraOn && hasPermission ? (
-                <div className="w-28 h-28 rounded-full border-4 border-white/10 overflow-hidden bg-black">
-                  <video
-                    ref={localVideoRef}
-                    autoPlay
-                    muted
-                    playsInline
-                    width="112"
-                    height="112"
-                    className="w-full h-full object-cover"
-                    style={{ 
-                      transform: isFrontCamera ? 'scaleX(-1)' : 'none',
-                      minWidth: '100%',
-                      minHeight: '100%'
-                    }}
-                    onLoadedMetadata={(e) => console.log('Video metadata loaded', e.currentTarget.videoWidth, e.currentTarget.videoHeight)}
-                    onPlay={(e) => console.log('Video started playing')}
-                    onError={(e) => console.error('Video error', e)}
-                  />
-                </div>
-              ) : (
-                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center border-4 border-white/10 overflow-hidden">
-                  <div className="text-center">
-                    <VideoOffIcon className="w-8 h-8 text-white/40 mx-auto mb-1" />
-                    <span className="text-[10px] text-white/30">Camera Off</span>
-                  </div>
-                </div>
-              )
+        {/* Permission Error */}
+        {permissionError && (
+          <div className="mb-4 px-4 py-2 bg-red-500/20 border border-red-500/50 rounded-lg mx-6">
+            <p className="text-red-400 text-sm text-center">
+              Camera/Mic access denied. Check browser permissions.
+            </p>
+          </div>
+        )}
+
+        {/* Video Call Layout - Full Screen Self View */}
+        {callType === 'video' && callState === 'connected' ? (
+          <div className="relative w-full h-64 mb-4">
+            {/* Main Video Feed - Self View */}
+            {isCameraOn && hasPermission ? (
+              <div className="absolute inset-0 bg-black rounded-xl overflow-hidden">
+                <video
+                  ref={localVideoRef}
+                  autoPlay
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                  style={{ 
+                    transform: isFrontCamera ? 'scaleX(-1)' : 'none'
+                  }}
+                  onLoadedMetadata={(e) => console.log('Video metadata loaded', e.currentTarget.videoWidth, e.currentTarget.videoHeight)}
+                  onPlay={(e) => console.log('Video started playing')}
+                  onError={(e) => console.error('Video error', e)}
+                />
+              </div>
             ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center">
+                <div className="text-center">
+                  <VideoOffIcon className="w-16 h-16 text-white/40 mx-auto mb-2" />
+                  <span className="text-sm text-white/50">Camera Off</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Contact Thumbnail - Picture in Picture */}
+            <div className="absolute top-3 right-3 w-20 h-20 rounded-xl border-2 border-white/20 overflow-hidden bg-slate-800 shadow-lg">
               <img
                 src={contactAvatar}
                 alt={contactName}
-                className="w-28 h-28 rounded-full border-4 border-white/10" />
-            )}
-            {(callState === 'calling' || callState === 'ringing') &&
-            <motion.div
-              animate={{
-                scale: [1, 1.4, 1],
-                opacity: [0.4, 0, 0.4]
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity
-              }}
-              className="absolute inset-0 rounded-full border-4 border-chat-accent" />
-
-            }
-            {callState === 'connected' &&
-            <span className="absolute bottom-1 right-1 w-5 h-5 bg-chat-online rounded-full border-3 border-slate-800" />
-            }
+                className="w-full h-full object-cover"
+              />
+              {callState === 'connected' && (
+                <span className="absolute bottom-1 right-1 w-3 h-3 bg-chat-online rounded-full border-2 border-slate-800" />
+              )}
+            </div>
           </div>
+        ) : (
+          /* Audio Call Layout - Center Avatar */
+          <div className="flex flex-col items-center px-6 pb-8">
+            <div className="relative mb-5">
+              <img
+                src={contactAvatar}
+                alt={contactName}
+                className="w-28 h-28 rounded-full border-4 border-white/10"
+              />
+              {(callState === 'calling' || callState === 'ringing') && (
+                <motion.div
+                  animate={{
+                    scale: [1, 1.4, 1],
+                    opacity: [0.4, 0, 0.4]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity
+                  }}
+                  className="absolute inset-0 rounded-full border-4 border-chat-accent"
+                />
+              )}
+              {callState === 'connected' && (
+                <span className="absolute bottom-1 right-1 w-5 h-5 bg-chat-online rounded-full border-3 border-slate-800" />
+              )}
+            </div>
 
-          <h3 className="text-white text-xl font-semibold mb-1">
-            {contactName}
-          </h3>
+            <h3 className="text-white text-xl font-semibold mb-1">
+              {contactName}
+            </h3>
           <p className="text-white/50 text-sm mb-1">
             {callType === 'video' ? 'Video Call' : 'Voice Call'}
           </p>
