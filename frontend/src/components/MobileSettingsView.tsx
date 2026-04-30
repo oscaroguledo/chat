@@ -225,7 +225,7 @@ export function MobileSettingsView({
                     <Volume2Icon className="w-5 h-5 text-chat-muted" />
                     <span className="text-chat-text dark:text-chat-text">Sound</span>
                   </div>
-                  <button
+                  <Button
                     onClick={() => updateNotifications('sound', !settings.notifications.sound)}
                     className={`w-12 h-6 rounded-full transition-colors ${settings.notifications.sound ? 'bg-chat-accent' : 'bg-chat-border'}`}
                   >
@@ -237,7 +237,7 @@ export function MobileSettingsView({
                     <VibrateIcon className="w-5 h-5 text-chat-muted" />
                     <span className="text-chat-text dark:text-chat-text">Vibration</span>
                   </div>
-                  <button
+                  <Button
                     onClick={() => updateNotifications('vibration', !settings.notifications.vibration)}
                     className={`w-12 h-6 rounded-full transition-colors ${settings.notifications.vibration ? 'bg-chat-accent' : 'bg-chat-border'}`}
                   >
@@ -249,7 +249,7 @@ export function MobileSettingsView({
                     <EyeIcon className="w-5 h-5 text-chat-muted" />
                     <span className="text-chat-text dark:text-chat-text">Message Preview</span>
                   </div>
-                  <button
+                  <Button
                     onClick={() => updateNotifications('messagePreview', !settings.notifications.messagePreview)}
                     className={`w-12 h-6 rounded-full transition-colors ${settings.notifications.messagePreview ? 'bg-chat-accent' : 'bg-chat-border'}`}
                   >
@@ -290,7 +290,7 @@ export function MobileSettingsView({
                   <p className="text-sm font-medium text-chat-text dark:text-chat-text mb-3">Last Seen</p>
                   <div className="space-y-2">
                     {(['everyone', 'contacts', 'nobody'] as const).map(option => (
-                      <button
+                      <Button
                         key={option}
                         onClick={() => updatePrivacy('lastSeen', option)}
                         className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-chat-area transition-colors"
@@ -305,7 +305,7 @@ export function MobileSettingsView({
                   <p className="text-sm font-medium text-chat-text dark:text-chat-text mb-3">Profile Photo</p>
                   <div className="space-y-2">
                     {(['everyone', 'contacts', 'nobody'] as const).map(option => (
-                      <button
+                      <Button
                         key={option}
                         onClick={() => updatePrivacy('profilePhoto', option)}
                         className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-chat-area transition-colors"
@@ -318,7 +318,7 @@ export function MobileSettingsView({
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <span className="text-chat-text dark:text-chat-text">Read Receipts</span>
-                  <button
+                  <Button
                     onClick={() => updatePrivacy('readReceipts', !settings.privacy.readReceipts)}
                     className={`w-12 h-6 rounded-full transition-colors ${settings.privacy.readReceipts ? 'bg-chat-accent' : 'bg-chat-border'}`}
                   >
@@ -356,7 +356,7 @@ export function MobileSettingsView({
               </div>
               <div className="space-y-1">
                 {languages.map(lang => (
-                  <button
+                  <Button
                     key={lang}
                     onClick={() => {
                       setSettings(prev => ({ ...prev, language: lang }));
@@ -399,7 +399,7 @@ export function MobileSettingsView({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {wallpapers.map(wp => (
-                  <button
+                  <Button
                     key={wp.id}
                     onClick={() => {
                       setSettings(prev => ({ ...prev, wallpaper: wp.id }));

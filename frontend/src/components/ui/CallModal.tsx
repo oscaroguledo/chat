@@ -4,7 +4,6 @@ import {
   MicIcon,
   MicOffIcon,
   Volume2Icon,
-  VolumeXIcon,
   VideoIcon,
   VideoOffIcon,
   CameraIcon,
@@ -84,11 +83,11 @@ export function CallModal({
     createRingTone();
     startVibration();
 
-    // Repeat ringing pattern every 2 seconds
+    // Continuous ringing without pause - ring every 1.5 seconds (same as tone duration)
     ringingIntervalRef.current = window.setInterval(() => {
       createRingTone();
       startVibration();
-    }, 2000);
+    }, 1500);
 
     return () => {
       // Cleanup
@@ -288,7 +287,7 @@ export function CallModal({
               <ControlButton
               active={isSpeaker}
               activeIcon={<Volume2Icon className="w-6 h-6" />}
-              inactiveIcon={<VolumeXIcon className="w-6 h-6" />}
+              inactiveIcon={<Volume2Icon className="w-6 h-6" />}
               label={isSpeaker ? 'Speaker' : 'Earpiece'}
               onClick={() => setIsSpeaker(!isSpeaker)} />
             
