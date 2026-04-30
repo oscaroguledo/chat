@@ -31,10 +31,100 @@ export function CallModal({
   const [isCameraOn, setIsCameraOn] = useState(callType === 'video');
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [elapsed, setElapsed] = useState(0);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [hasPermission, setHasPermission] = useState(false);
+  const [permissionError, setPermissionError] = useState<string | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
   const ringingIntervalRef = useRef<number | null>(null);
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Request camera/microphone access when call starts
+  useEffect(() => {
+    const requestMedia = async () => {
+      try {
+        const constraints: MediaStreamConstraints = {
+          audio: true,
+          video: callType === 'video' ? {
+            facingMode: isFrontCamera ? 'user' : 'environment'
+          } : false
+        };
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        setLocalStream(stream);
+        setHasPermission(true);
+        setPermissionError(null);
+
+        if (localVideoRef.current && callType === 'video') {
+          localVideoRef.current.srcObject = stream;
+        }
+      } catch (err) {
+        console.error('Failed to get media permissions:', err);
+        setPermissionError(err instanceof Error ? err.message : 'Permission denied');
+        setHasPermission(false);
+      }
+    };
+
+    requestMedia();
+
+    return () => {
+      // Clean up media stream
+      localStream?.getTracks().forEach(track => track.stop());
+    };
+  }, [callType, isFrontCamera]);
+
+  // Handle mute/unmute
+  useEffect(() => {
+    if (localStream) {
+      localStream.getAudioTracks().forEach(track => {
+        track.enabled = !isMuted;
+      });
+    }
+  }, [isMuted, localStream]);
+
+  // Handle camera on/off
+  useEffect(() => {
+    if (localStream) {
+      localStream.getVideoTracks().forEach(track => {
+        track.enabled = isCameraOn;
+      });
+    }
+  }, [isCameraOn, localStream]);
+
+  // Handle camera switch
+  const switchCamera = async () => {
+    if (!localStream) return;
+
+    // Stop current video tracks
+    localStream.getVideoTracks().forEach(track => track.stop());
+
+    try {
+      const newFacingMode = isFrontCamera ? 'environment' : 'user';
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        audio: !isMuted,
+        video: { facingMode: newFacingMode }
+      });
+
+      // Replace video track
+      const newVideoTrack = newStream.getVideoTracks()[0];
+      const oldVideoTrack = localStream.getVideoTracks()[0];
+
+      if (oldVideoTrack) {
+        localStream.removeTrack(oldVideoTrack);
+      }
+      localStream.addTrack(newVideoTrack);
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = localStream;
+      }
+
+      setIsFrontCamera(!isFrontCamera);
+    } catch (err) {
+      console.error('Failed to switch camera:', err);
+    }
+  };
 
   // Ringing sound and vibration effect (active during calling and ringing states)
   useEffect(() => {
@@ -116,6 +206,9 @@ export function CallModal({
     return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
   const handleEndCall = () => {
+    // Stop all media tracks
+    localStream?.getTracks().forEach(track => track.stop());
+    setLocalStream(null);
     setCallState('ended');
     setTimeout(onClose, 800);
   };
@@ -187,22 +280,43 @@ export function CallModal({
 
         {/* Contact */}
         <div className="flex flex-col items-center px-6 pb-8">
+          {/* Permission Error */}
+          {permissionError && (
+            <div className="mb-4 px-4 py-2 bg-red-500/20 border border-red-500/50 rounded-lg">
+              <p className="text-red-400 text-sm text-center">
+                Camera/Mic access denied. Check browser permissions.
+              </p>
+            </div>
+          )}
+          
           <div className="relative mb-5">
-            {/* Video preview placeholder */}
-            {isCameraOn && callState === 'connected' ?
-            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center border-4 border-white/10 overflow-hidden">
-                <div className="text-center">
-                  <VideoIcon className="w-8 h-8 text-white/40 mx-auto mb-1" />
-                  <span className="text-[10px] text-white/30">Camera On</span>
+            {/* Video Feed - Self View for Video Calls */}
+            {callType === 'video' && callState === 'connected' ? (
+              isCameraOn && hasPermission ? (
+                <div className="w-28 h-28 rounded-full border-4 border-white/10 overflow-hidden bg-slate-700">
+                  <video
+                    ref={localVideoRef}
+                    autoPlay
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                    style={{ transform: isFrontCamera ? 'scaleX(-1)' : 'none' }}
+                  />
                 </div>
-              </div> :
-
-            <img
-              src={contactAvatar}
-              alt={contactName}
-              className="w-28 h-28 rounded-full border-4 border-white/10" />
-
-            }
+              ) : (
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center border-4 border-white/10 overflow-hidden">
+                  <div className="text-center">
+                    <VideoOffIcon className="w-8 h-8 text-white/40 mx-auto mb-1" />
+                    <span className="text-[10px] text-white/30">Camera Off</span>
+                  </div>
+                </div>
+              )
+            ) : (
+              <img
+                src={contactAvatar}
+                alt={contactName}
+                className="w-28 h-28 rounded-full border-4 border-white/10" />
+            )}
             {(callState === 'calling' || callState === 'ringing') &&
             <motion.div
               animate={{
@@ -298,7 +412,7 @@ export function CallModal({
               activeIcon={<CameraIcon className="w-6 h-6" />}
               inactiveIcon={<CameraIcon className="w-6 h-6" />}
               label={isFrontCamera ? 'Front' : 'Back'}
-              onClick={() => setIsFrontCamera(!isFrontCamera)} />
+              onClick={switchCamera} />
 
             }
             </div>
