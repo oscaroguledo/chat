@@ -82,7 +82,7 @@ export function CallModal({
       localVideoRef.current.srcObject = localStream;
       localVideoRef.current.play().catch(err => console.error('Error playing video:', err));
     }
-  }, [localStream]);
+  }, [localStream, callState, isCameraOn]); // Re-run when video element might become available
 
   // Handle mute/unmute
   useEffect(() => {
