@@ -53,13 +53,12 @@ export function CallModal({
         };
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        console.log('Got media stream:', stream);
+        console.log('Video tracks:', stream.getVideoTracks());
+        console.log('Audio tracks:', stream.getAudioTracks());
         setLocalStream(stream);
         setHasPermission(true);
         setPermissionError(null);
-
-        if (localVideoRef.current && callType === 'video') {
-          localVideoRef.current.srcObject = stream;
-        }
       } catch (err) {
         console.error('Failed to get media permissions:', err);
         setPermissionError(err instanceof Error ? err.message : 'Permission denied');
@@ -74,6 +73,16 @@ export function CallModal({
       localStream?.getTracks().forEach(track => track.stop());
     };
   }, [callType, isFrontCamera]);
+
+  // Attach stream to video element when both are available
+  useEffect(() => {
+    console.log('Attach stream effect - localStream:', localStream, 'ref:', localVideoRef.current);
+    if (localStream && localVideoRef.current) {
+      console.log('Attaching stream to video element');
+      localVideoRef.current.srcObject = localStream;
+      localVideoRef.current.play().catch(err => console.error('Error playing video:', err));
+    }
+  }, [localStream]);
 
   // Handle mute/unmute
   useEffect(() => {
