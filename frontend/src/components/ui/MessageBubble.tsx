@@ -407,11 +407,11 @@ export function MessageBubble({
               {isGroupChat && !isOwnMessage && (
                 <button
                   onClick={handleReplyPrivately}
-                  className="p-1.5 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-chat-muted dark:text-chat-muted overflow-hidden"
-                  title="Reply privately">
-                  <div className="flex items-center gap-1 overflow-contain">
+                  className="p-2 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-lg shadow-sm hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-chat-muted dark:text-chat-muted min-w-[56px]"
+                  title={`Reply privately to ${sender.name}`}>
+                  <div className="flex items-center gap-1.5">
                     <ReplyIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted flex-shrink-0" />
-                    <img src={sender.avatar} alt={sender.name} className="w-4 h-4 rounded-full flex-shrink-0 object-cover" />
+                    <img src={sender.avatar} alt={sender.name} className="w-5 h-5 rounded-full flex-shrink-0 object-cover" />
                   </div>
                 </button>
               )}
