@@ -16,23 +16,13 @@ interface SocketProviderProps {
 export function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth(); // Auth disabled - socket connects regardless
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
-      // Disconnect if user logs out
-      if (socket) {
-        socket.disconnect();
-        setSocket(null);
-        setConnected(false);
-      }
-      return;
-    }
-
-    // Connect to WebSocket server
+    // Connect to WebSocket server (auth disabled for now)
     const newSocket = io('http://localhost:8000', {
       autoConnect: true,
-      auth: { token: user.token }
+      auth: { token: user?.token || 'no-token' } // Send token if available
     });
 
     newSocket.on('connect', () => {
@@ -56,7 +46,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
     return () => {
       newSocket.disconnect();
     };
-  }, [user, isAuthenticated]);
+  }, [user]);
 
   const value: SocketContextType = {
     socket,
