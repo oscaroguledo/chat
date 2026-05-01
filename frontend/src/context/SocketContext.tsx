@@ -39,6 +39,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
       console.error('Socket connection error:', error.message);
       setConnected(false);
     });
+    
 
     setSocket(newSocket);
 

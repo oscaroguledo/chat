@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CallType } from '@/components/ui/CallModal';
 import { IconButton } from '@/components/ui/IconButton';
 import { Dropdown } from '@/components/ui/Dropdown';
+import { useSocket } from '@/context/SocketContext';
 interface ChatWindowProps {
   chat: Chat;
   onToggleInfo: () => void;
@@ -55,6 +56,7 @@ export function ChatWindow({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const { socket, connected } = useSocket();
   useEffect(() => {
     setMessages(chat.messages);
     setReplyingTo(initialReplyToMessage);
@@ -123,6 +125,7 @@ export function ChatWindow({
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
       senderId: currentUser.id,
+      recipientId: chat.id,
       type: 'text',
       content,
       timestamp: new Date(),
@@ -138,35 +141,41 @@ export function ChatWindow({
     };
     setMessages([...messages, newMessage]);
     setReplyingTo(undefined);
-    setTimeout(() => {
-      setMessages((prev) =>
-      prev.map((m) =>
-      m.id === newMessage.id ?
-      {
-        ...m,
-        status: 'delivered' as const
-      } :
-      m
-      )
-      );
-    }, 1000);
-    setTimeout(() => {
-      setMessages((prev) =>
-      prev.map((m) =>
-      m.id === newMessage.id ?
-      {
-        ...m,
-        status: 'read' as const
-      } :
-      m
-      )
-      );
-    }, 2000);
+    setMessages((prev) =>prev.map((m) =>m.id === newMessage.id ?{...m,status: 'delivered' as const} :m));
+    setMessages((prev) =>prev.map((m) =>m.id === newMessage.id ?{...m,status: 'read' as const} :m));
+    socket?.emit('message', newMessage);
   };
+  useEffect(() => {
+    if (!socket) {
+      console.log('Socket not connected yet');
+      return;
+    }
+    
+    console.log('Adding message listener, socket id:', socket.id);
+    console.log('Current chat id:', chat.id);
+    
+    const handleMessage = (data: Message) => {
+      console.log('Message received:', data);
+      console.log('Comparing recipientId:', data.recipientId, 'with chat.id:', chat.id);
+      if (data.recipientId === chat.id) {
+        console.log('Adding message to chat');
+        setMessages(prev => [...prev, data]);
+      }
+    };
+    
+    socket.on('message', handleMessage);
+    
+    return () => {
+      console.log('Removing message listener');
+      socket.off('message', handleMessage);
+    };
+  }, [socket, chat.id]);
+  
   const handleSendVoice = (duration: number) => {
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
       senderId: currentUser.id,
+      recipientId: chat.id,
       content: 'Voice message',
       timestamp: new Date(),
       type: 'voice',
