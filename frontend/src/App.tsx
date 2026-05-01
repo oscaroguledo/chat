@@ -10,6 +10,7 @@ import { MobileCallsView } from '@/components/MobileCallsView';
 import { CallModal, CallType } from '@/components/ui/CallModal';
 import { chats, Message, currentUser, users } from '@/data/mockData';
 import { AnimatePresence } from 'framer-motion';
+import { SocketProvider } from './context/SocketContext';
 interface ActiveCall {
   contactName: string;
   contactAvatar: string;
@@ -166,6 +167,8 @@ export function App() {
     }
   };
   return (
+    <SocketProvider>
+    
     <div className="w-full h-screen bg-chat-bg dark:bg-chat-bg flex flex-col md:flex-row overflow-hidden">
       {/* Mobile layout */}
       <div className="flex flex-col flex-1 md:hidden overflow-hidden">
@@ -216,6 +219,7 @@ export function App() {
 
         }
       </AnimatePresence>
-    </div>);
-
+    </div>
+    </SocketProvider>
+  );
 }
