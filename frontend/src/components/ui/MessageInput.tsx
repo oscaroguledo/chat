@@ -388,7 +388,7 @@ export function MessageInput({
                   {isGroupChat && (
                     <button
                       onClick={() => selectMention('all')}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left ${mentionIndex === 0 ? 'bg-chat-area dark:bg-chat-area' : ''}`}
+                      className={`w-full flex items-center justify-start gap-3 px-3 py-2.5 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left ${mentionIndex === 0 ? 'bg-chat-area dark:bg-chat-area' : ''}`}
                     >
                       <div className="w-8 h-8 bg-chat-accent/10 rounded-full flex items-center justify-center">
                         <span className="text-chat-accent text-sm font-bold">@</span>
@@ -405,7 +405,7 @@ export function MessageInput({
                       <button
                         key={member.id}
                         onClick={() => selectMention(member)}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left ${mentionIndex === actualIndex ? 'bg-chat-area dark:bg-chat-area' : ''}`}
+                        className={`w-full flex items-center justify-start gap-3 px-3 py-2.5 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left ${mentionIndex === actualIndex ? 'bg-chat-area dark:bg-chat-area' : ''}`}
                       >
                         <img
                           src={member.avatar}
@@ -491,7 +491,7 @@ export function MessageInput({
                           ].map(({ icon: Icon, label, color }) => (
                             <button
                               key={label}
-                              className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
+                              className="flex items-center justify-start gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
                               <Icon className={`w-5 h-5 ${color}`} />
                               <span className="text-sm text-chat-text dark:text-chat-text">
                                 {label}
