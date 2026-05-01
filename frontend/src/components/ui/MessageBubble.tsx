@@ -18,6 +18,7 @@ import { AudioPlayer } from '@/components/ui/AudioPlayer';
 import { ImageViewer } from '@/components/ui/ImageViewer';
 import { FileViewer } from '@/components/ui/FileViewer';
 import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
 export interface MessageBubbleProps {
   message: Message;
   isOwnMessage: boolean;
@@ -691,18 +692,12 @@ export function MessageBubble({
           autoFocus
         />
         <div className="flex justify-end gap-2 mt-3">
-          <button
-            onClick={cancelEditing}
-            className="px-4 py-2 text-sm font-medium text-chat-muted dark:text-chat-muted hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors"
-          >
+          <Button variant="ghost" size="sm" onClick={cancelEditing}>
             Cancel
-          </button>
-          <button
-            onClick={handleEdit}
-            className="px-4 py-2 text-sm font-medium bg-chat-accent text-white rounded-lg hover:bg-chat-accent/90 transition-colors"
-          >
+          </Button>
+          <Button variant="primary" size="sm" onClick={handleEdit}>
             Save
-          </button>
+          </Button>
         </div>
       </Modal>
 
@@ -712,18 +707,12 @@ export function MessageBubble({
           Are you sure you want to delete this message? This action cannot be undone.
         </p>
         <div className="flex justify-end gap-2">
-          <button
-            onClick={() => setShowDeleteConfirm(false)}
-            className="px-4 py-2 text-sm font-medium text-chat-muted dark:text-chat-muted hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors"
-          >
+          <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(false)}>
             Cancel
-          </button>
-          <button
-            onClick={handleDelete}
-            className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
+          </Button>
+          <Button variant="danger" size="sm" onClick={handleDelete}>
             Delete
-          </button>
+          </Button>
         </div>
       </Modal>
     </>);

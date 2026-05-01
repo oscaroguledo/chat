@@ -17,6 +17,8 @@ import {
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CallType } from '@/components/ui/CallModal';
+import { IconButton } from '@/components/ui/IconButton';
+import { Button } from '@/components/ui/Button';
 interface ChatWindowProps {
   chat: Chat;
   onToggleInfo: () => void;
@@ -310,12 +312,9 @@ export function ChatWindow({
       <div className="bg-chat-card dark:bg-chat-card border-b border-chat-border dark:border-chat-border px-3 md:px-6 py-3 md:py-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
           {onBack &&
-          <button
-            onClick={onBack}
-            className="md:hidden p-1.5 -ml-1 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-text dark:text-chat-text">
-            
-              <ArrowLeftIcon className="w-5 h-5" />
-            </button>
+          <IconButton variant="ghost" size="sm" onClick={onBack} className="md:hidden -ml-1">
+            <ArrowLeftIcon className="w-5 h-5" />
+          </IconButton>
           }
           <button
             onClick={onToggleInfo}
@@ -351,35 +350,37 @@ export function ChatWindow({
         </div>
 
         <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
-          <button
+          <IconButton
+            variant="ghost"
+            size="md"
             onClick={() => handleCall('voice')}
-            className="hidden md:flex p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-muted dark:text-chat-muted">
-            
+            className="hidden md:flex">
             <PhoneIcon className="w-5 h-5" />
-          </button>
-          <button
+          </IconButton>
+          <IconButton
+            variant="ghost"
+            size="md"
             onClick={() => handleCall('video')}
-            className="hidden md:flex p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-muted dark:text-chat-muted">
-            
+            className="hidden md:flex">
             <VideoIcon className="w-5 h-5" />
-          </button>
-          <button
+          </IconButton>
+          <IconButton
+            variant={showSearch ? 'primary' : 'ghost'}
+            size="md"
             onClick={() => {
               setShowSearch(!showSearch);
               if (!showSearch)
               setTimeout(() => searchInputRef.current?.focus(), 100);
-            }}
-            className={`p-2 rounded-lg transition-colors ${showSearch ? 'bg-chat-area dark:bg-chat-area text-chat-accent' : 'hover:bg-chat-area dark:hover:bg-chat-area text-chat-muted dark:text-chat-muted'}`}>
-            
+            }}>
             <SearchIcon className="w-5 h-5" />
-          </button>
+          </IconButton>
           <div className="relative" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-muted dark:text-chat-muted">
-              
+            <IconButton
+              variant="ghost"
+              size="md"
+              onClick={() => setShowMenu(!showMenu)}>
               <MoreVerticalIcon className="w-5 h-5" />
-            </button>
+            </IconButton>
             <AnimatePresence>
               {showMenu &&
               <motion.div
@@ -400,46 +401,44 @@ export function ChatWindow({
                 }}
                 className="absolute right-0 top-full mt-1 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg overflow-hidden z-30 min-w-[180px]">
                 
-                  <button
-                  onClick={() => {
-                    handleCall('voice');
-                    setShowMenu(false);
-                  }}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
-                  
-                    <PhoneIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
-                    <span className="text-sm text-chat-text dark:text-chat-text">
-                      Voice call
-                    </span>
-                  </button>
-                  <button
-                  onClick={() => {
-                    handleCall('video');
-                    setShowMenu(false);
-                  }}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
-                  
-                    <VideoIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
-                    <span className="text-sm text-chat-text dark:text-chat-text">
-                      Video call
-                    </span>
-                  </button>
-                  <button
-                  onClick={handleClearHistory}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
-                  
-                    <EraserIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
-                    <span className="text-sm text-chat-text dark:text-chat-text">
-                      Clear history
-                    </span>
-                  </button>
-                  <button
-                  onClick={handleDeleteChat}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors w-full text-left">
-                  
-                    <Trash2Icon className="w-4 h-4 text-red-500" />
-                    <span className="text-sm text-red-500">Delete chat</span>
-                  </button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      handleCall('voice');
+                      setShowMenu(false);
+                    }}
+                    className="w-full justify-start">
+                    <PhoneIcon className="w-4 h-4 mr-3" />
+                    Voice call
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      handleCall('video');
+                      setShowMenu(false);
+                    }}
+                    className="w-full justify-start">
+                    <VideoIcon className="w-4 h-4 mr-3" />
+                    Video call
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearHistory}
+                    className="w-full justify-start">
+                    <EraserIcon className="w-4 h-4 mr-3" />
+                    Clear history
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={handleDeleteChat}
+                    className="w-full justify-start">
+                    <Trash2Icon className="w-4 h-4 mr-3" />
+                    Delete chat
+                  </Button>
                 </motion.div>
               }
             </AnimatePresence>
@@ -481,28 +480,22 @@ export function ChatWindow({
                 </span>
             }
               <div className="flex items-center gap-0.5 flex-shrink-0">
-                <button
-                onClick={() => navigateSearch('up')}
-                className="p-1 hover:bg-chat-area dark:hover:bg-chat-area rounded transition-colors text-chat-muted dark:text-chat-muted">
-                
-                  <ChevronUpIcon className="w-4 h-4" />
-                </button>
-                <button
-                onClick={() => navigateSearch('down')}
-                className="p-1 hover:bg-chat-area dark:hover:bg-chat-area rounded transition-colors text-chat-muted dark:text-chat-muted">
-                
-                  <ChevronDownIcon className="w-4 h-4" />
-                </button>
-              </div>
-              <button
-              onClick={() => {
-                setShowSearch(false);
-                setSearchQuery('');
-              }}
-              className="p-1 hover:bg-chat-area dark:hover:bg-chat-area rounded transition-colors text-chat-muted dark:text-chat-muted">
-              
+                <IconButton variant="ghost" size="sm" onClick={() => navigateSearch('up')}>
+                <ChevronUpIcon className="w-4 h-4" />
+              </IconButton>
+              <IconButton variant="ghost" size="sm" onClick={() => navigateSearch('down')}>
+                <ChevronDownIcon className="w-4 h-4" />
+              </IconButton>
+              <IconButton
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowSearch(false);
+                  setSearchQuery('');
+                  setCurrentMatchIndex(0);
+                }}>
                 <XIcon className="w-4 h-4" />
-              </button>
+              </IconButton>
             </div>
           </motion.div>
         }
