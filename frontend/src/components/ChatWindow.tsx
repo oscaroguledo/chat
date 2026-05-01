@@ -18,8 +18,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { CallType } from '@/components/ui/CallModal';
 import { IconButton } from '@/components/ui/IconButton';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Dropdown } from '@/components/ui/Dropdown';
 interface ChatWindowProps {
   chat: Chat;
   onToggleInfo: () => void;
@@ -46,7 +45,6 @@ export function ChatWindow({
 }: ChatWindowProps) {
   const [messages, setMessages] = useState(chat.messages);
   const [replyingTo, setReplyingTo] = useState<Message | undefined>();
-  const [showMenu, setShowMenu] = useState(false);
   const [pinnedMessageId, setPinnedMessageId] = useState<string | undefined>(
     chat.pinnedMessageId
   );
@@ -60,11 +58,9 @@ export function ChatWindow({
   useEffect(() => {
     setMessages(chat.messages);
     setReplyingTo(initialReplyToMessage);
-    setShowMenu(false);
     setPinnedMessageId(chat.pinnedMessageId);
     setShowSearch(false);
     setSearchQuery('');
-    setSearchResults([]);
     setSearchIndex(0);
   }, [chat, initialReplyToMessage]);
   const scrollToBottom = () => {
@@ -88,12 +84,6 @@ export function ChatWindow({
       }
     }, 120);
   }, [messages, initialScrollToMessageId]);
-  useEffect(() => {
-    if (!showMenu) return;
-    const close = () => setShowMenu(false);
-    document.addEventListener('click', close);
-    return () => document.removeEventListener('click', close);
-  }, [showMenu]);
   // Search logic
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -256,11 +246,9 @@ export function ChatWindow({
   };
   const handleClearHistory = () => {
     setMessages([]);
-    setShowMenu(false);
   };
   const handleDeleteChat = () => {
     setMessages([]);
-    setShowMenu(false);
   };
   const getOtherUser = () => {
     if (chat.type === 'group') return null;
@@ -375,76 +363,44 @@ export function ChatWindow({
             }}>
             <SearchIcon className="w-5 h-5" />
           </IconButton>
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
-            <IconButton
-              variant="ghost"
-              size="md"
-              onClick={() => setShowMenu(!showMenu)}>
-              <MoreVerticalIcon className="w-5 h-5" />
-            </IconButton>
-            <AnimatePresence>
-              {showMenu &&
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  scale: 0.95,
-                  y: -5
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  y: 0
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.95,
-                  y: -5
-                }}
-                className="absolute right-0 top-full mt-1 z-30 min-w-[180px]">
-                <Card padding="none" shadow="none" className="overflow-hidden">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      handleCall('voice');
-                      setShowMenu(false);
-                    }}
-                    className="w-full !justify-start rounded-none">
-                    <PhoneIcon className="w-4 h-4 mr-3" />
-                    Voice call
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      handleCall('video');
-                      setShowMenu(false);
-                    }}
-                    className="w-full !justify-start rounded-none">
-                    <VideoIcon className="w-4 h-4 mr-3" />
-                    Video call
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClearHistory}
-                    className="w-full !justify-start rounded-none">
-                    <EraserIcon className="w-4 h-4 mr-3" />
-                    Clear history
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={handleDeleteChat}
-                    className="w-full !justify-start rounded-none">
-                    <Trash2Icon className="w-4 h-4 mr-3" />
-                    Delete chat
-                  </Button>
-                </Card>
-              </motion.div>
+          <Dropdown
+            trigger={
+              <IconButton
+                variant="ghost"
+                size="md">
+                <MoreVerticalIcon className="w-5 h-5" />
+              </IconButton>
+            }
+            items={[
+              {
+                id: 'voice-call',
+                label: 'Voice call',
+                icon: PhoneIcon,
+                onClick: () => handleCall('voice')
+              },
+              {
+                id: 'video-call',
+                label: 'Video call',
+                icon: VideoIcon,
+                onClick: () => handleCall('video')
+              },
+              {
+                id: 'clear-history',
+                label: 'Clear history',
+                icon: EraserIcon,
+                onClick: handleClearHistory
+              },
+              {
+                id: 'delete-chat',
+                label: 'Delete chat',
+                icon: Trash2Icon,
+                variant: 'danger',
+                onClick: handleDeleteChat
               }
-            </AnimatePresence>
-          </div>
+            ]}
+            width="min-w-[180px]"
+            align="right"
+          />
         </div>
       </div>
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Chat, currentUser, users, Call, mockCalls } from '@/data/mockData';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { IconButton } from '@/components/ui/IconButton';
+import { Dropdown } from '@/components/ui/Dropdown';
 
 import {
   SearchIcon,
@@ -28,7 +28,7 @@ import {
   ArrowDownLeftIcon,
   ArrowUpRightIcon } from
 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 type SidebarView = 'chats' | 'contacts' | 'settings' | 'profile' | 'calls';
 interface SidebarProps {
   chats: Chat[];
@@ -45,7 +45,6 @@ export function Sidebar({
   darkMode
 }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showMenu, setShowMenu] = useState(false);
   const [view, setView] = useState<SidebarView>('chats');
   const [chatFilter, setChatFilter] = useState<'all' | 'unread' | 'group'>('all');
   const filteredChats = chats
@@ -66,12 +65,6 @@ export function Sidebar({
       }
       return matchesSearch;
     });
-  useEffect(() => {
-    if (!showMenu) return;
-    const close = () => setShowMenu(false);
-    document.addEventListener('click', close);
-    return () => document.removeEventListener('click', close);
-  }, [showMenu]);
   const formatLastMessageTime = (messages: any[]) => {
     if (messages.length === 0) return '';
     const lastMessage = messages[messages.length - 1];
@@ -436,74 +429,42 @@ export function Sidebar({
               {import.meta.env.VITE_APP_NAME || 'Chat'}
             </h3>
           </div>
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
-            <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-muted dark:text-chat-muted">
-            
+          <Dropdown
+            trigger={
+              <button
+              className="p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-muted dark:text-chat-muted">
               <MoreVerticalIcon className="w-5 h-5" />
             </button>
-            <AnimatePresence>
-              {showMenu &&
-            <motion.div
-              initial={{
-                opacity: 0,
-                scale: 0.95,
-                y: -5
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                y: 0
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.95,
-                y: -5
-              }}
-              className="absolute right-0 top-full mt-1 z-30 min-w-[160px]">
-              <Card padding="none" shadow className="overflow-hidden">
-                  {[
-              {
-                icon: UsersIcon,
-                label: 'Contacts',
-                view: 'contacts' as SidebarView
-              },
-              {
-                icon: PhoneIcon,
-                label: 'Calls',
-                view: 'calls' as SidebarView
-              },
-              {
-                icon: SettingsIcon,
-                label: 'Settings',
-                view: 'settings' as SidebarView
-              },
-              {
-                icon: UserIcon,
-                label: 'Profile',
-                view: 'profile' as SidebarView
-              }].
-              map(({ icon: Icon, label, view: v }) =>
-              <Button
-                key={label}
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setView(v);
-                  setShowMenu(false);
-                }}
-                className="w-full !justify-start rounded-none">
-                
-                      <Icon className="w-4 h-4 mr-3 text-chat-muted dark:text-chat-muted" />
-                      {label}
-                    </Button>
-              )}
-                </Card>
-              </motion.div>
             }
-            </AnimatePresence>
-          </div>
+            items={[
+              {
+                id: 'contacts',
+                label: 'Contacts',
+                icon: UsersIcon,
+                onClick: () => setView('contacts')
+              },
+              {
+                id: 'calls',
+                label: 'Calls',
+                icon: PhoneIcon,
+                onClick: () => setView('calls')
+              },
+              {
+                id: 'settings',
+                label: 'Settings',
+                icon: SettingsIcon,
+                onClick: () => setView('settings')
+              },
+              {
+                id: 'profile',
+                label: 'Profile',
+                icon: UserIcon,
+                onClick: () => setView('profile')
+              }
+            ]}
+            width="min-w-[160px]"
+            align="right"
+          />
         </div>
 
         {/* Mobile header */}
