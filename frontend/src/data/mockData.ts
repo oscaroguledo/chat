@@ -17,7 +17,6 @@ export interface User {
 export interface Message {
   id: string;
   senderId: string;
-  recipientId: string;
   content: string;
   timestamp: Date;
   status?: MessageStatus;
@@ -126,10 +125,11 @@ const now = new Date();
 const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
 
+type ChatType = 'direct' | 'group';
 export const chats: Chat[] = [
 {
   id: 'chat-1',
-  type: 'direct',
+  type: 'direct' as ChatType,
   name: 'Sarah Chen',
   avatar: users['user-2'].avatar,
   participants: ['user-1', 'user-2'],

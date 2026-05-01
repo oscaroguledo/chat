@@ -125,7 +125,6 @@ export function ChatWindow({
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
       senderId: currentUser.id,
-      recipientId: chat.id,
       type: 'text',
       content,
       timestamp: new Date(),
@@ -143,7 +142,12 @@ export function ChatWindow({
     setReplyingTo(undefined);
     setMessages((prev) =>prev.map((m) =>m.id === newMessage.id ?{...m,status: 'delivered' as const} :m));
     setMessages((prev) =>prev.map((m) =>m.id === newMessage.id ?{...m,status: 'read' as const} :m));
-    socket?.emit('message', newMessage);
+    const data: any = {
+      ...newMessage,
+      chatId: chat.id,
+      type: chat.type
+    };
+    socket?.emit('message', data);
   };
   useEffect(() => {
     if (!socket) {
@@ -151,10 +155,10 @@ export function ChatWindow({
       return;
     }
     
-    const handleMessage = (data: Message) => {
+    const handleMessage = (data: any) => {
       console.log('Message received:', data);
-      console.log('Comparing recipientId:', data.recipientId, 'with chat.id:', chat.id);
-      if (data.recipientId === chat.id) {
+      console.log('Comparing chatId:', data.chatId, 'with chat.id:', chat.id);
+      if (data.chatId === chat.id) {
         setMessages(prev => [...prev, data]);
       }
     };
@@ -171,7 +175,6 @@ export function ChatWindow({
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
       senderId: currentUser.id,
-      recipientId: chat.id,
       content: 'Voice message',
       timestamp: new Date(),
       type: 'voice',

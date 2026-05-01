@@ -12,38 +12,49 @@ const io = new Server(server, {
   cors: { origin: '*' } // adjust in production
 });
 io.on("connection", (socket) => {
-  logger.socket('User connected', { socketId: socket.id });
+    const userId = socket.handshake.query.userId;
+    socket.join(`user:${userId}`);
+    logger.socket(`User ${userId} connected`, { socketId: socket.id, userId });
 
-  socket.on('disconnect', () => {
-    logger.socket('User disconnected', { socketId: socket.id });
-  });
-  socket.on('message', (data) => {
-    logger.socket('Message received', { socketId: socket.id, data });
-    // Emit to all clients including sender (for debugging)
-    socket.broadcast.emit('message', data);
-    // io.emit('message', data);
-  });
-  socket.on('join-group', (data) => {
-    logger.socket('Join group', { socketId: socket.id, data });
-  });
-  socket.on('leave-group', (data) => {
-    logger.socket('Leave group', { socketId: socket.id, data });
-  });
-  socket.on('admin-action', (data) => {
-    logger.socket('Admin action', { socketId: socket.id, data });
-  });
-  socket.on('mute-user', (data) => {
-    logger.socket('Mute user', { socketId: socket.id, data });
-  });
-  socket.on('typing', (data) => {
-    logger.socket('Typing', { socketId: socket.id, data });
-  });
-  socket.on('presence', (data) => {
-    logger.socket('Presence', { socketId: socket.id, data });
-  });
-  socket.on('notification', (data) => {
-    logger.socket('Notification', { socketId: socket.id, data });
-  });
+    socket.on('disconnect', () => {
+        logger.socket(`User ${userId} disconnected`, { socketId: socket.id });
+        
+    });
+    socket.on('private-message', (data) => {
+        io.to(`user:${data.userId}`).emit('private-message', data);
+        logger.socket(`Private message from user ${userId}`, { socketId: socket.id, data });
+        
+    });
+    socket.on('group-message', (data) => {
+        io.to(`group:${data.groupId}`).emit('group-message', data);
+        logger.socket(`Group message from user ${userId}`, { socketId: socket.id, data });
+        
+    });
+    socket.on('join-group', (data) => {
+        socket.join(`group:${data.groupId}`);
+        socket.to(`group:${data.groupId}`).emit('user-joined', { userId, groupId: data.groupId });
+        logger.socket(`User ${userId} joined group`, { socketId: socket.id, data });
+    });
+    socket.on('leave-group', (data) => {
+        socket.leave(`group:${data.groupId}`);
+        socket.to(`group:${data.groupId}`).emit('user-left', { userId, groupId: data.groupId });
+        logger.socket(`User ${userId} left group`, { socketId: socket.id, data });
+    });
+    socket.on('admin-action', (data) => {
+        logger.socket(`User ${userId} performed admin action`, { socketId: socket.id, data });
+    });
+    socket.on('mute-user', (data) => {
+        logger.socket(`User ${userId} muted user`, { socketId: socket.id, data });
+    });
+    socket.on('typing', (data) => {
+        logger.socket(`User ${userId} is typing`, { socketId: socket.id, data });
+    });
+    socket.on('presence', (data) => {
+        logger.socket(`User ${userId} sent presence`, { socketId: socket.id, data });
+    });
+    socket.on('notification', (data) => {
+        logger.socket(`User ${userId} sent notification`, { socketId: socket.id, data });
+    });
 });
 // ─── Middleware ───────────────────────────────
 app.use(express.json());
