@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Chat, currentUser, users } from '@/data/mockData';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 export interface Call {
   id: string;
@@ -510,8 +511,8 @@ export function Sidebar({
                 scale: 0.95,
                 y: -5
               }}
-              className="absolute right-0 top-full mt-1 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg overflow-hidden z-30 min-w-[160px]">
-              
+              className="absolute right-0 top-full mt-1 z-30 min-w-[160px]">
+              <Card padding="none" shadow className="overflow-hidden">
                   {[
               {
                 icon: UsersIcon,
@@ -534,21 +535,22 @@ export function Sidebar({
                 view: 'profile' as SidebarView
               }].
               map(({ icon: Icon, label, view: v }) =>
-              <button
+              <Button
                 key={label}
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   setView(v);
                   setShowMenu(false);
                 }}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-chat-area dark:hover:bg-chat-area transition-colors w-full text-left">
+                className="w-full justify-start rounded-none">
                 
-                      <Icon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
-                      <span className="text-sm text-chat-text dark:text-chat-text">
-                        {label}
-                      </span>
-                    </button>
+                      <Icon className="w-4 h-4 mr-3 text-chat-muted dark:text-chat-muted" />
+                      {label}
+                    </Button>
               )}
-                </motion.div>
+                </Card>
+              </motion.div>
             }
             </AnimatePresence>
           </div>

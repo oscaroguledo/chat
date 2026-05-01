@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CallType } from '@/components/ui/CallModal';
 import { IconButton } from '@/components/ui/IconButton';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 interface ChatWindowProps {
   chat: Chat;
   onToggleInfo: () => void;
@@ -399,8 +400,8 @@ export function ChatWindow({
                   scale: 0.95,
                   y: -5
                 }}
-                className="absolute right-0 top-full mt-1 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-xl shadow-lg overflow-hidden z-30 min-w-[180px]">
-                
+                className="absolute right-0 top-full mt-1 z-30 min-w-[180px]">
+                <Card padding="none" shadow className="overflow-hidden">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -408,7 +409,7 @@ export function ChatWindow({
                       handleCall('voice');
                       setShowMenu(false);
                     }}
-                    className="w-full justify-start">
+                    className="w-full justify-start rounded-none">
                     <PhoneIcon className="w-4 h-4 mr-3" />
                     Voice call
                   </Button>
@@ -419,7 +420,7 @@ export function ChatWindow({
                       handleCall('video');
                       setShowMenu(false);
                     }}
-                    className="w-full justify-start">
+                    className="w-full justify-start rounded-none">
                     <VideoIcon className="w-4 h-4 mr-3" />
                     Video call
                   </Button>
@@ -427,7 +428,7 @@ export function ChatWindow({
                     variant="ghost"
                     size="sm"
                     onClick={handleClearHistory}
-                    className="w-full justify-start">
+                    className="w-full justify-start rounded-none">
                     <EraserIcon className="w-4 h-4 mr-3" />
                     Clear history
                   </Button>
@@ -435,11 +436,12 @@ export function ChatWindow({
                     variant="danger"
                     size="sm"
                     onClick={handleDeleteChat}
-                    className="w-full justify-start">
+                    className="w-full justify-start rounded-none">
                     <Trash2Icon className="w-4 h-4 mr-3" />
                     Delete chat
                   </Button>
-                </motion.div>
+                </Card>
+              </motion.div>
               }
             </AnimatePresence>
           </div>
