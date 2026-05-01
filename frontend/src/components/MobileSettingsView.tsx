@@ -145,7 +145,7 @@ export function MobileSettingsView({
                 <Button
                   key={idx}
                   onClick={item.action || (() => {})}
-                  className="w-full flex items-center justify-start gap-3 px-4 py-3.5 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left border-b border-chat-border/50 dark:border-chat-border/50 last:border-b-0">
+                  className="w-full flex items-center !justify-start gap-3 px-4 py-3.5 hover:bg-chat-area dark:hover:bg-chat-area transition-colors text-left border-b border-chat-border/50 dark:border-chat-border/50 last:border-b-0">
                   
                     <Icon className="w-5 h-5 text-chat-muted dark:text-chat-muted flex-shrink-0" />
                     <div className="flex-1 min-w-0">

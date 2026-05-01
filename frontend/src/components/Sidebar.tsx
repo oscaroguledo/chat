@@ -493,7 +493,7 @@ export function Sidebar({
                   setView(v);
                   setShowMenu(false);
                 }}
-                className="w-full justify-start rounded-none">
+                className="w-full !justify-start rounded-none">
                 
                       <Icon className="w-4 h-4 mr-3 text-chat-muted dark:text-chat-muted" />
                       {label}

@@ -409,7 +409,7 @@ export function ChatWindow({
                       handleCall('voice');
                       setShowMenu(false);
                     }}
-                    className="w-full justify-start rounded-none">
+                    className="w-full !justify-start rounded-none">
                     <PhoneIcon className="w-4 h-4 mr-3" />
                     Voice call
                   </Button>
@@ -420,7 +420,7 @@ export function ChatWindow({
                       handleCall('video');
                       setShowMenu(false);
                     }}
-                    className="w-full justify-start rounded-none">
+                    className="w-full !justify-start rounded-none">
                     <VideoIcon className="w-4 h-4 mr-3" />
                     Video call
                   </Button>
@@ -428,7 +428,7 @@ export function ChatWindow({
                     variant="ghost"
                     size="sm"
                     onClick={handleClearHistory}
-                    className="w-full justify-start rounded-none">
+                    className="w-full !justify-start rounded-none">
                     <EraserIcon className="w-4 h-4 mr-3" />
                     Clear history
                   </Button>
@@ -436,7 +436,7 @@ export function ChatWindow({
                     variant="danger"
                     size="sm"
                     onClick={handleDeleteChat}
-                    className="w-full justify-start rounded-none">
+                    className="w-full !justify-start rounded-none">
                     <Trash2Icon className="w-4 h-4 mr-3" />
                     Delete chat
                   </Button>
