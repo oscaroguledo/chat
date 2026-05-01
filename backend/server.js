@@ -1,7 +1,7 @@
 // server.js
 const express = require('express');
-const config = require('./core/config');
-const healthRoutes = require('./routes/health');
+const config = require('@/core/config');
+const healthRoutes = require('@/routes/health');
 const app = express();
 
 app.use('/health', healthRoutes);
