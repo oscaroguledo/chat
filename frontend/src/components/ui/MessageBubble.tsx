@@ -18,6 +18,7 @@ import { AudioPlayer } from '@/components/ui/AudioPlayer';
 import { ImageViewer } from '@/components/ui/ImageViewer';
 import { FileViewer } from '@/components/ui/FileViewer';
 import { Modal } from '@/components/ui/Modal';
+import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
 export interface MessageBubbleProps {
   message: Message;
@@ -685,10 +686,11 @@ export function MessageBubble({
 
       {/* Edit Message Modal */}
       <Modal isOpen={isEditing} onClose={cancelEditing} title="Edit Message" size="md">
-        <textarea
+        <Textarea
           value={editContent}
           onChange={(e) => setEditContent(e.target.value)}
-          className="w-full px-3 py-2 bg-chat-area dark:bg-chat-area rounded-lg outline-none text-chat-text dark:text-chat-text resize-none min-h-[80px]"
+          variant="area"
+          className="min-h-[80px]"
           autoFocus
         />
         <div className="flex justify-end gap-2 mt-3">

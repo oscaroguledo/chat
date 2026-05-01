@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { EmojiPicker } from '@/components/ui/EmojiPicker';
 import { IconButton } from '@/components/ui/IconButton';
 import { Button } from '@/components/ui/Button';
+import { Textarea } from '@/components/ui/Textarea';
 
 export interface MessageInputProps {
   onSendMessage: (content: string, mentions?: string[]) => void;
@@ -369,14 +370,15 @@ export function MessageInput({
 
             {/* Text input */}
             <div className="flex-1 relative">
-              <textarea
+              <Textarea
               ref={textareaRef}
               value={message}
               onChange={handleMessageChange}
               onKeyDown={handleKeyDown}
               onKeyPress={handleKeyPress}
               placeholder="Message"
-              className="w-full  bg-transparent resize-none outline-none text-chat-text dark:text-chat-text placeholder-chat-muted dark:placeholder-chat-muted text-sm leading-5 max-h-28"
+              variant="area"
+              className="text-sm leading-5 max-h-28"
               rows={1} />
               
               {/* Mention List Dropdown */}
