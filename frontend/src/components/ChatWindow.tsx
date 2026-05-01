@@ -151,14 +151,10 @@ export function ChatWindow({
       return;
     }
     
-    console.log('Adding message listener, socket id:', socket.id);
-    console.log('Current chat id:', chat.id);
-    
     const handleMessage = (data: Message) => {
       console.log('Message received:', data);
       console.log('Comparing recipientId:', data.recipientId, 'with chat.id:', chat.id);
       if (data.recipientId === chat.id) {
-        console.log('Adding message to chat');
         setMessages(prev => [...prev, data]);
       }
     };
@@ -269,13 +265,14 @@ export function ChatWindow({
   const handleCall = (type: CallType) => {
     if (onStartCall) onStartCall(chat.name, chat.avatar, type);
   };
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    if (date.toDateString() === today.toDateString()) return 'Today';
-    if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
-    return date.toLocaleDateString('en-US', {
+    if (dateObj.toDateString() === today.toDateString()) return 'Today';
+    if (dateObj.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return dateObj.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'

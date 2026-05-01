@@ -187,8 +187,9 @@ export function MessageBubble({
     'text-chat-muted dark:text-chat-muted';
     return <CheckCheckIcon className={`w-4 h-4 ${iconClass}`} />;
   };
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
+  const formatTime = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit'
     });

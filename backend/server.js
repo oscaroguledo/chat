@@ -20,7 +20,8 @@ io.on("connection", (socket) => {
   socket.on('message', (data) => {
     logger.socket('Message received', { socketId: socket.id, data });
     // Emit to all clients including sender (for debugging)
-    io.emit('message', data);
+    socket.broadcast.emit('message', data);
+    // io.emit('message', data);
   });
   socket.on('join-group', (data) => {
     logger.socket('Join group', { socketId: socket.id, data });
