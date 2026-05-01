@@ -401,7 +401,7 @@ export function ChatWindow({
                   y: -5
                 }}
                 className="absolute right-0 top-full mt-1 z-30 min-w-[180px]">
-                <Card padding="none" shadow className="overflow-hidden">
+                <Card padding="none" shadow="none" className="overflow-hidden">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -467,37 +467,38 @@ export function ChatWindow({
           className="bg-chat-card dark:bg-chat-card border-b border-chat-border dark:border-chat-border flex-shrink-0 overflow-hidden">
           
             <div className="px-4 py-2 flex items-center gap-2">
-              <SearchIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted flex-shrink-0" />
-              <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search in conversation..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent outline-none text-sm text-chat-text dark:text-chat-text placeholder-chat-muted" />
-            
-              {searchResults.length > 0 &&
-            <span className="text-xs text-chat-muted dark:text-chat-muted flex-shrink-0">
-                  {searchIndex + 1}/{searchResults.length}
-                </span>
-            }
+                <SearchIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted flex-shrink-0" />
+                <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search in conversation..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent outline-none text-sm text-chat-text dark:text-chat-text placeholder-chat-muted" />
+              
+                {searchResults.length > 0 &&
+              <span className="text-xs text-chat-muted dark:text-chat-muted flex-shrink-0">
+                    {searchIndex + 1}/{searchResults.length}
+                  </span>
+              }
               <div className="flex items-center gap-0.5 flex-shrink-0">
                 <IconButton variant="ghost" size="sm" onClick={() => navigateSearch('up')}>
-                <ChevronUpIcon className="w-4 h-4" />
-              </IconButton>
-              <IconButton variant="ghost" size="sm" onClick={() => navigateSearch('down')}>
-                <ChevronDownIcon className="w-4 h-4" />
-              </IconButton>
-              <IconButton
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setShowSearch(false);
-                  setSearchQuery('');
-                  setCurrentMatchIndex(0);
-                }}>
-                <XIcon className="w-4 h-4" />
-              </IconButton>
+                  <ChevronUpIcon className="w-4 h-4" />
+                </IconButton>
+                <IconButton variant="ghost" size="sm" onClick={() => navigateSearch('down')}>
+                  <ChevronDownIcon className="w-4 h-4" />
+                </IconButton>
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowSearch(false);
+                    setSearchQuery('');
+                    setCurrentMatchIndex(0);
+                  }}>
+                  <XIcon className="w-4 h-4" />
+                </IconButton>
+            </div>
             </div>
           </motion.div>
         }

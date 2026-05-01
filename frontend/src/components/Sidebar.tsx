@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Chat, currentUser, users } from '@/data/mockData';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
 
 export interface Call {
   id: string;
@@ -658,9 +659,9 @@ export function Sidebar({
                   <BellOffIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
                   }
                     {chat.unreadCount > 0 &&
-                  <span className="bg-chat-accent text-white text-xs font-semibold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                  <Badge variant="notification" className="min-w-[20px] justify-center">
                         {chat.unreadCount}
-                      </span>
+                      </Badge>
                   }
                   </div>
                 </div>
