@@ -14,6 +14,8 @@ import {
 import { Message } from '@/data/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EmojiPicker } from '@/components/ui/EmojiPicker';
+import { IconButton } from '@/components/ui/IconButton';
+import { Button } from '@/components/ui/Button';
 
 export interface MessageInputProps {
   onSendMessage: (content: string, mentions?: string[]) => void;
@@ -192,7 +194,6 @@ export function MessageInput({
   };
   // Refs to prevent immediate closing when opening menus
   const emojiPickerRef = useRef<HTMLDivElement>(null);
-  const emojiButtonRef = useRef<HTMLButtonElement>(null);
   const attachMenuRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -244,12 +245,13 @@ export function MessageInput({
                     {replyingTo.content}
                   </p>
                 </div>
-                <button
-                onClick={onCancelReply}
-                className="ml-2 p-1 hover:bg-chat-area dark:hover:bg-chat-area rounded-full transition-colors">
-                
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={onCancelReply}
+                  className="ml-2">
                   <XIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
-                </button>
+                </IconButton>
               </div>
             </div>
           </motion.div>
@@ -274,12 +276,13 @@ export function MessageInput({
           }}
           className="flex items-center gap-3 bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border rounded-full px-4 py-2.5 shadow-sm">
           
-            <button
-            onClick={() => stopRecording(false)}
-            className="p-1.5 hover:bg-chat-area dark:hover:bg-chat-area rounded-full transition-colors text-red-500">
-            
+            <IconButton
+              variant="ghost"
+              size="sm"
+              onClick={() => stopRecording(false)}
+              className="text-red-500">
               <XIcon className="w-5 h-5" />
-            </button>
+            </IconButton>
 
             <div className="flex items-center gap-2 flex-1">
               <motion.div
@@ -318,12 +321,13 @@ export function MessageInput({
               </div>
             </div>
 
-            <button
-            onClick={() => stopRecording(true)}
-            className="p-2.5 bg-chat-accent hover:bg-chat-accent/90 rounded-full transition-colors text-white">
-            
+            <IconButton
+              variant="primary"
+              size="md"
+              onClick={() => stopRecording(true)}
+              className="bg-chat-accent hover:bg-chat-accent/90 text-white">
               <SendIcon className="w-5 h-5" />
-            </button>
+            </IconButton>
           </motion.div>
         }
       </AnimatePresence>
@@ -340,15 +344,16 @@ export function MessageInput({
             ref={emojiPickerRef}
             className="relative flex-shrink-0">
             
-              <button
-                ref={emojiButtonRef}
+              <IconButton
+                variant="ghost"
+                size="md"
                 onClick={() => {
                   setShowEmojiPicker(!showEmojiPicker);
                   setShowAttachMenu(false);
                 }}
-                className={`p-2.5 transition-colors ${showEmojiPicker ? 'text-chat-accent' : 'text-chat-muted dark:text-chat-muted hover:text-chat-text dark:hover:text-chat-text'}`}>
+                className={showEmojiPicker ? 'text-chat-accent' : 'text-chat-muted dark:text-chat-muted hover:text-chat-text dark:hover:text-chat-text'}>
                 <SmileIcon className="w-5 h-5" />
-              </button>
+              </IconButton>
               <AnimatePresence>
                 {showEmojiPicker && (
                   <div className="fixed inset-0 z-[9998]" onClick={() => setShowEmojiPicker(false)}>
@@ -431,14 +436,16 @@ export function MessageInput({
             ref={attachMenuRef}
             className="relative flex-shrink-0">
             
-                <button
+                <IconButton
+                  variant="ghost"
+                  size="md"
                   onClick={() => {
                     setShowAttachMenu(!showAttachMenu);
                     setShowEmojiPicker(false);
                   }}
-                  className="p-2.5 text-chat-muted dark:text-chat-muted hover:text-chat-text dark:hover:text-chat-text transition-colors">
+                  className="text-chat-muted dark:text-chat-muted hover:text-chat-text dark:hover:text-chat-text">
                   <PaperclipIcon className="w-5 h-5" />
-                </button>
+                </IconButton>
                 <AnimatePresence>
                   {showAttachMenu && (
                     <div className="fixed inset-0 z-[9998]" onClick={() => setShowAttachMenu(false)}>
@@ -500,7 +507,7 @@ export function MessageInput({
           </div>
 
           {/* Send or Mic button */}
-          <motion.button
+          <motion.div
           key={hasText ? 'send' : 'mic'}
           initial={{
             scale: 0.8,
@@ -512,16 +519,18 @@ export function MessageInput({
           }}
           transition={{
             duration: 0.15
-          }}
-          onClick={hasText ? handleSend : startRecording}
-          className={`flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center transition-colors shadow-sm ${hasText ? 'bg-chat-accent hover:bg-chat-accent/90 text-white' : 'bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border text-chat-muted dark:text-chat-muted hover:text-chat-accent'}`}>
-          
+          }}>
+          <IconButton
+            variant={hasText ? 'primary' : 'ghost'}
+            size="md"
+            onClick={hasText ? handleSend : startRecording}
+            className={`flex-shrink-0 w-11 h-11 rounded-full shadow-sm ${hasText ? 'bg-chat-accent hover:bg-chat-accent/90 text-white' : 'bg-chat-card dark:bg-chat-card border border-chat-border dark:border-chat-border text-chat-muted dark:text-chat-muted hover:text-chat-accent'}`}>
             {hasText ?
-          <SendIcon className="w-5 h-5" /> :
-
-          <MicIcon className="w-5 h-5" />
-          }
-          </motion.button>
+              <SendIcon className="w-5 h-5" /> :
+              <MicIcon className="w-5 h-5" />
+            }
+          </IconButton>
+          </motion.div>
         </div>
       }
     </div>);

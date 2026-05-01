@@ -14,6 +14,8 @@ import {
   ChevronUpIcon } from
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { IconButton } from '@/components/ui/IconButton';
+import { Badge } from '@/components/ui/Badge';
 interface InfoPanelProps {
   chat: Chat;
   onClose: () => void;
@@ -91,22 +93,24 @@ export function InfoPanel({ chat, onClose, onMemberClick }: InfoPanelProps) {
       {/* Header */}
       <div className="p-4 border-b border-chat-border dark:border-chat-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <button
+          <IconButton
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className="md:hidden p-1.5 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-text dark:text-chat-text">
-            
+            className="md:hidden">
             <ArrowLeftIcon className="w-5 h-5" />
-          </button>
+          </IconButton>
           <h3 className="font-semibold text-chat-text dark:text-chat-text">
             {isGroup ? 'Group Info' : 'Contact Info'}
           </h3>
         </div>
-        <button
+        <IconButton
+          variant="ghost"
+          size="md"
           onClick={onClose}
-          className="hidden md:flex p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-muted dark:text-chat-muted">
-          
+          className="hidden md:flex">
           <XIcon className="w-5 h-5" />
-        </button>
+        </IconButton>
       </div>
 
       {/* Profile */}
@@ -360,7 +364,7 @@ export function InfoPanel({ chat, onClose, onMemberClick }: InfoPanelProps) {
                         <p className="font-medium text-chat-text dark:text-chat-text truncate">
                           {currentUser.name}
                         </p>
-                        <span className="text-[10px] bg-chat-accent/20 text-chat-accent px-2 py-0.5 rounded-full">You</span>
+                        <Badge variant="primary" size="sm">You</Badge>
                       </div>
                       <p className="text-xs text-chat-muted dark:text-chat-muted truncate">
                         Online

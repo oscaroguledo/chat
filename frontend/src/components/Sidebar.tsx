@@ -3,6 +3,7 @@ import { Chat, currentUser, users } from '@/data/mockData';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { IconButton } from '@/components/ui/IconButton';
 
 export interface Call {
   id: string;
@@ -156,12 +157,12 @@ export function Sidebar({
   // Sub-view header
   const renderSubHeader = (title: string) =>
   <div className="p-4 border-b border-chat-border dark:border-chat-border flex items-center gap-3">
-      <button
-      onClick={() => setView('chats')}
-      className="p-1.5 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-text dark:text-chat-text">
-      
+      <IconButton
+        variant="ghost"
+        size="sm"
+        onClick={() => setView('chats')}>
         <ArrowLeftIcon className="w-5 h-5" />
-      </button>
+      </IconButton>
       <h3 className="font-semibold text-chat-text dark:text-chat-text">
         {title}
       </h3>
@@ -563,12 +564,12 @@ export function Sidebar({
             Chats
           </h2>
           <div className="flex items-center gap-1">
-            <button className="p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-muted dark:text-chat-muted">
+            <IconButton variant="ghost" size="md">
               <SearchIcon className="w-5 h-5" />
-            </button>
-            <button className="p-2 hover:bg-chat-area dark:hover:bg-chat-area rounded-lg transition-colors text-chat-muted dark:text-chat-muted">
+            </IconButton>
+            <IconButton variant="ghost" size="md">
               <MoreVerticalIcon className="w-5 h-5" />
-            </button>
+            </IconButton>
           </div>
         </div>
 
