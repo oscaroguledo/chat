@@ -430,3 +430,157 @@ export const sharedMedia = [
 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=400&h=400&fit=crop',
 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=400&fit=crop',
 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=400&fit=crop'];
+
+// Call types and mock data (from Sidebar.tsx)
+export interface Call {
+  id: string;
+  contactId: string;
+  contactName: string;
+  contactAvatar: string;
+  type: 'incoming' | 'outgoing' | 'missed';
+  callType: 'audio' | 'video';
+  timestamp: Date;
+  duration?: string;
+}
+
+export const mockCalls: Call[] = [
+  {
+    id: 'call-1',
+    contactId: 'user-2',
+    contactName: 'Sarah Chen',
+    contactAvatar: users['user-2'].avatar,
+    type: 'incoming',
+    callType: 'video',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    duration: '15:30'
+  },
+  {
+    id: 'call-2',
+    contactId: 'user-3',
+    contactName: 'Marcus Johnson',
+    contactAvatar: users['user-3'].avatar,
+    type: 'outgoing',
+    callType: 'audio',
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+    duration: '8:45'
+  },
+  {
+    id: 'call-3',
+    contactId: 'user-4',
+    contactName: 'Emma Wilson',
+    contactAvatar: users['user-4'].avatar,
+    type: 'missed',
+    callType: 'video',
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
+  },
+  {
+    id: 'call-4',
+    contactId: 'user-7',
+    contactName: 'David Kim',
+    contactAvatar: users['user-7'].avatar,
+    type: 'incoming',
+    callType: 'audio',
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    duration: '4:20'
+  }
+];
+
+// CallLog types and mock data (from MobileCallsView.tsx)
+export interface CallLog {
+  id: string;
+  contactId: string;
+  type: 'voice' | 'video';
+  direction: 'incoming' | 'outgoing' | 'missed';
+  timestamp: Date;
+  duration?: string;
+}
+
+export const mockCallLogs: CallLog[] = [
+  {
+    id: 'call-1',
+    contactId: 'user-2',
+    type: 'video',
+    direction: 'incoming',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    duration: '12:34'
+  },
+  {
+    id: 'call-2',
+    contactId: 'user-3',
+    type: 'voice',
+    direction: 'missed',
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000)
+  },
+  {
+    id: 'call-3',
+    contactId: 'user-4',
+    type: 'voice',
+    direction: 'outgoing',
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+    duration: '5:21'
+  },
+  {
+    id: 'call-4',
+    contactId: 'user-7',
+    type: 'video',
+    direction: 'outgoing',
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    duration: '45:02'
+  },
+  {
+    id: 'call-5',
+    contactId: 'user-5',
+    type: 'voice',
+    direction: 'incoming',
+    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    duration: '2:15'
+  },
+  {
+    id: 'call-6',
+    contactId: 'user-8',
+    type: 'voice',
+    direction: 'missed',
+    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: 'call-7',
+    contactId: 'user-6',
+    type: 'video',
+    direction: 'incoming',
+    timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    duration: '18:47'
+  }
+];
+
+// UserSettings type (from MobileSettingsView.tsx)
+export interface UserSettings {
+  notifications: {
+    sound: boolean;
+    vibration: boolean;
+    messagePreview: boolean;
+  };
+  privacy: {
+    lastSeen: 'everyone' | 'contacts' | 'nobody';
+    profilePhoto: 'everyone' | 'contacts' | 'nobody';
+    readReceipts: boolean;
+  };
+  twoFactorEnabled: boolean;
+  language: string;
+  wallpaper: string;
+}
+
+export const defaultUserSettings: UserSettings = {
+  notifications: {
+    sound: true,
+    vibration: true,
+    messagePreview: true
+  },
+  privacy: {
+    lastSeen: 'everyone',
+    profilePhoto: 'everyone',
+    readReceipts: true
+  },
+  twoFactorEnabled: false,
+  language: 'English',
+  wallpaper: 'default'
+};

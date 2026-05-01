@@ -17,46 +17,17 @@ import {
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
+import { UserSettings, defaultUserSettings } from '@/data/mockData';
 interface MobileSettingsViewProps {
   darkMode: boolean;
   onToggleDarkMode: () => void;
-}
-
-export interface UserSettings {
-  notifications: {
-    sound: boolean;
-    vibration: boolean;
-    messagePreview: boolean;
-  };
-  privacy: {
-    lastSeen: 'everyone' | 'contacts' | 'nobody';
-    profilePhoto: 'everyone' | 'contacts' | 'nobody';
-    readReceipts: boolean;
-  };
-  twoFactorEnabled: boolean;
-  language: string;
-  wallpaper: string;
 }
 
 export function MobileSettingsView({
   darkMode,
   onToggleDarkMode
 }: MobileSettingsViewProps) {
-  const [settings, setSettings] = useState<UserSettings>({
-    notifications: {
-      sound: true,
-      vibration: true,
-      messagePreview: true
-    },
-    privacy: {
-      lastSeen: 'everyone',
-      profilePhoto: 'everyone',
-      readReceipts: true
-    },
-    twoFactorEnabled: true,
-    language: 'English',
-    wallpaper: 'default'
-  });
+  const [settings, setSettings] = useState<UserSettings>(defaultUserSettings);
 
   const [activeModal, setActiveModal] = useState<'notifications' | 'privacy' | 'wallpaper' | 'language' | '2fa' | null>(null);
 

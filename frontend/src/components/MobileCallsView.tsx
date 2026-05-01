@@ -6,7 +6,7 @@ import {
   PhoneOutgoingIcon,
   PhoneMissedIcon } from
 'lucide-react';
-import { users } from '@/data/mockData';
+import { users, CallLog, mockCallLogs } from '@/data/mockData';
 import { CallType } from '@/components/ui/CallModal';
 import { Button } from '@/components/ui/Button';
 interface MobileCallsViewProps {
@@ -16,69 +16,6 @@ interface MobileCallsViewProps {
   callType: CallType)
   => void;
 }
-interface CallLog {
-  id: string;
-  contactId: string;
-  type: CallType;
-  direction: 'incoming' | 'outgoing' | 'missed';
-  timestamp: Date;
-  duration?: string;
-}
-const mockCallLogs: CallLog[] = [
-{
-  id: 'call-1',
-  contactId: 'user-2',
-  type: 'video',
-  direction: 'incoming',
-  timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-  duration: '12:34'
-},
-{
-  id: 'call-2',
-  contactId: 'user-3',
-  type: 'voice',
-  direction: 'missed',
-  timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000)
-},
-{
-  id: 'call-3',
-  contactId: 'user-4',
-  type: 'voice',
-  direction: 'outgoing',
-  timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-  duration: '5:21'
-},
-{
-  id: 'call-4',
-  contactId: 'user-7',
-  type: 'video',
-  direction: 'outgoing',
-  timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-  duration: '45:02'
-},
-{
-  id: 'call-5',
-  contactId: 'user-5',
-  type: 'voice',
-  direction: 'incoming',
-  timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-  duration: '2:15'
-},
-{
-  id: 'call-6',
-  contactId: 'user-8',
-  type: 'voice',
-  direction: 'missed',
-  timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
-},
-{
-  id: 'call-7',
-  contactId: 'user-6',
-  type: 'video',
-  direction: 'incoming',
-  timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-  duration: '18:47'
-}];
 
 export function MobileCallsView({ onStartCall }: MobileCallsViewProps) {
   const [filter, setFilter] = useState<'all' | 'missed'>('all');

@@ -1,62 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Chat, currentUser, users } from '@/data/mockData';
+import { Chat, currentUser, users, Call, mockCalls } from '@/data/mockData';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { IconButton } from '@/components/ui/IconButton';
 
-export interface Call {
-  id: string;
-  contactId: string;
-  contactName: string;
-  contactAvatar: string;
-  type: 'incoming' | 'outgoing' | 'missed';
-  callType: 'audio' | 'video';
-  timestamp: Date;
-  duration?: string;
-}
-
-const mockCalls: Call[] = [
-  {
-    id: 'call-1',
-    contactId: 'user-2',
-    contactName: 'Sarah Chen',
-    contactAvatar: users['user-2'].avatar,
-    type: 'incoming',
-    callType: 'video',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    duration: '15:30'
-  },
-  {
-    id: 'call-2',
-    contactId: 'user-3',
-    contactName: 'Marcus Johnson',
-    contactAvatar: users['user-3'].avatar,
-    type: 'outgoing',
-    callType: 'audio',
-    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
-    duration: '8:45'
-  },
-  {
-    id: 'call-3',
-    contactId: 'user-4',
-    contactName: 'Emma Wilson',
-    contactAvatar: users['user-4'].avatar,
-    type: 'missed',
-    callType: 'video',
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
-  },
-  {
-    id: 'call-4',
-    contactId: 'user-7',
-    contactName: 'David Kim',
-    contactAvatar: users['user-7'].avatar,
-    type: 'incoming',
-    callType: 'audio',
-    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    duration: '4:20'
-  }
-];
 import {
   SearchIcon,
   MoreVerticalIcon,
