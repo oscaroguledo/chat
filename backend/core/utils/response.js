@@ -5,6 +5,34 @@
 
 class Response {
   /**
+   * Main response method with named parameters
+   * @param {Object} res - Express response object
+   * @param {Object} options - Response options
+   * @param {Boolean} options.success - Success status (default: true)
+   * @param {Object} options.data - Response data
+   * @param {String} options.message - Response message
+   * @param {Number} options.statusCode - HTTP status code (default: 200)
+   * @param {Object} options.errors - Validation errors or additional error details
+   */
+  static send(res, options = {}) {
+    const {
+      success = true,
+      data = null,
+      message = 'Success',
+      statusCode = 200,
+      errors = null
+    } = options;
+    
+    return res.status(statusCode).json({
+      success,
+      message,
+      data,
+      errors,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  /**
    * Success response
    * @param {Object} res - Express response object
    * @param {Object} data - Response data
@@ -12,12 +40,7 @@ class Response {
    * @param {Number} statusCode - HTTP status code (default: 200)
    */
   static success(res, data = null, message = 'Success', statusCode = 200) {
-    return res.status(statusCode).json({
-      success: true,
-      message,
-      data,
-      timestamp: new Date().toISOString()
-    });
+    return this.send(res, true, data, message, statusCode);
   }
 
   /**
@@ -28,12 +51,7 @@ class Response {
    * @param {Object} errors - Validation errors or additional error details
    */
   static error(res, message = 'Internal server error', statusCode = 500, errors = null) {
-    return res.status(statusCode).json({
-      success: false,
-      message,
-      errors,
-      timestamp: new Date().toISOString()
-    });
+    return this.send(res, false, null, message, statusCode, errors);
   }
 
   /**
