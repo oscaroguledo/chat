@@ -22,6 +22,7 @@ export interface Message {
   status?: MessageStatus;
   type: MessageType;
   replyTo?: string;
+  replyToChatId?: string; // For navigating to original message in different chat
   reactions?: {emoji: string;userIds: string[];}[];
   edited?: boolean;
   mentions?: string[];

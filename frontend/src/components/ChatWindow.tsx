@@ -27,6 +27,7 @@ interface ChatWindowProps {
   callType: CallType)
   => void;
   onReplyPrivately?: (senderId: string, quotedMessage: Message) => void;
+  onNavigateToMessage?: (chatId: string, messageId: string) => void;
   initialScrollToMessageId?: string;
   initialReplyToMessage?: Message;
 }
@@ -36,6 +37,7 @@ export function ChatWindow({
   onBack,
   onStartCall,
   onReplyPrivately,
+  onNavigateToMessage,
   initialScrollToMessageId,
   initialReplyToMessage
 }: ChatWindowProps) {
@@ -133,6 +135,7 @@ export function ChatWindow({
       timestamp: new Date(),
       status: 'sent',
       replyTo: replyingTo?.id,
+      replyToChatId: replyingTo?.id ? chat.id : undefined, // Store which chat the replied message is from
       mentions
     };
     setMessages([...messages, newMessage]);
@@ -548,10 +551,12 @@ export function ChatWindow({
               messages.find((m) => m.id === message.replyTo) :
               undefined
               }
+              currentChatId={chat.id}
               onReply={handleReply}
               onReact={handleReact}
               onPin={handlePin}
               onScrollToMessage={scrollToMessage}
+              onNavigateToMessage={onNavigateToMessage}
               isPinned={pinnedMessageId === message.id}
               isGroupChat={chat.type === 'group'}
               onEdit={handleEdit}

@@ -22,10 +22,12 @@ export interface MessageBubbleProps {
   isOwnMessage: boolean;
   showSenderName?: boolean;
   replyToMessage?: Message;
+  currentChatId?: string; // Current chat ID to determine if reply is in same chat
   onReply?: (message: Message) => void;
   onReact?: (messageId: string, emoji: string) => void;
   onPin?: (messageId: string) => void;
   onScrollToMessage?: (messageId: string) => void;
+  onNavigateToMessage?: (chatId: string, messageId: string) => void; // For cross-chat navigation
   isPinned?: boolean;
   isGroupChat?: boolean;
   onReplyPrivately?: (message: Message) => void;
@@ -52,10 +54,12 @@ export function MessageBubble({
   isOwnMessage,
   showSenderName,
   replyToMessage,
+  currentChatId,
   onReply,
   onReact,
   onPin,
   onScrollToMessage,
+  onNavigateToMessage,
   isPinned,
   isGroupChat,
   onReplyPrivately,
@@ -361,10 +365,20 @@ export function MessageBubble({
             </span>
           }
 
-          {/* Reply quote — clickable to scroll to original */}
+          {/* Reply quote — clickable to scroll to original or navigate to different chat */}
           {replyToMessage &&
           <button
-            onClick={() => onScrollToMessage?.(replyToMessage.id)}
+            onClick={() => {
+              // Check if the original message is in a different chat
+              const targetChatId = message.replyToChatId;
+              if (targetChatId && targetChatId !== currentChatId && onNavigateToMessage) {
+                // Navigate to different chat with the message
+                onNavigateToMessage(targetChatId, replyToMessage.id);
+              } else {
+                // Scroll to message in current chat
+                onScrollToMessage?.(replyToMessage.id);
+              }
+            }}
             className={`mb-1 px-3 py-2 rounded-lg text-sm border-l-2 max-w-full text-left cursor-pointer hover:opacity-80 transition-opacity ${isOwnMessage ? 'bg-slate-600 border-slate-400 text-white' : 'bg-slate-100 dark:bg-slate-700 border-chat-accent text-chat-text dark:text-chat-text'}`}>
             
               <p className="font-medium text-xs opacity-70 mb-0.5">

@@ -101,6 +101,17 @@ export function App() {
       setShowInfoPanel(false);
     }
   };
+
+  // Handle navigating to a message in any chat (for reply navigation)
+  const handleNavigateToMessage = (chatId: string, messageId: string) => {
+    const targetChat = allChats.find(c => c.id === chatId);
+    if (targetChat) {
+      setActiveChat(targetChat);
+      setScrollToMessageId(messageId);
+      setMobileView('chat');
+      setShowInfoPanel(false);
+    }
+  };
   
   const renderMobileContent = () => {
     if (mobileView === 'chat') {
@@ -113,7 +124,8 @@ export function App() {
             onToggleInfo={() => setShowInfoPanel(!showInfoPanel)}
             onBack={handleMobileBack}
             onStartCall={handleStartCall}
-            onReplyPrivately={handleReplyPrivately} />
+            onReplyPrivately={handleReplyPrivately}
+            onNavigateToMessage={handleNavigateToMessage} />
           
           <AnimatePresence>
             {showInfoPanel &&
@@ -180,7 +192,8 @@ export function App() {
           initialReplyToMessage={replyToMessage}
           onToggleInfo={() => setShowInfoPanel(!showInfoPanel)}
           onStartCall={handleStartCall}
-          onReplyPrivately={handleReplyPrivately} />
+          onReplyPrivately={handleReplyPrivately}
+          onNavigateToMessage={handleNavigateToMessage} />
         
         <AnimatePresence>
           {showInfoPanel &&
