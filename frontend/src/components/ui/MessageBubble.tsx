@@ -368,14 +368,24 @@ export function MessageBubble({
           {/* Reply quote — clickable to scroll to original or navigate to different chat */}
           {replyToMessage &&
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('Reply clicked:', {
+                replyToMessageId: replyToMessage.id,
+                currentChatId,
+                replyToChatId: message.replyToChatId,
+                hasOnNavigateToMessage: !!onNavigateToMessage,
+                hasOnScrollToMessage: !!onScrollToMessage
+              });
               // Check if the original message is in a different chat
               const targetChatId = message.replyToChatId;
               if (targetChatId && targetChatId !== currentChatId && onNavigateToMessage) {
                 // Navigate to different chat with the message
+                console.log('Navigating to different chat:', targetChatId, replyToMessage.id);
                 onNavigateToMessage(targetChatId, replyToMessage.id);
               } else {
                 // Scroll to message in current chat
+                console.log('Scrolling to message in current chat:', replyToMessage.id);
                 onScrollToMessage?.(replyToMessage.id);
               }
             }}
