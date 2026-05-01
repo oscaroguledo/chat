@@ -11,6 +11,7 @@ import { CallModal, CallType } from '@/components/ui/CallModal';
 import { chats, Message, currentUser, users } from '@/data/mockData';
 import { AnimatePresence } from 'framer-motion';
 import { SocketProvider } from './context/SocketContext';
+import { AuthProvider } from './context/AuthContext';
 interface ActiveCall {
   contactName: string;
   contactAvatar: string;
@@ -167,9 +168,9 @@ export function App() {
     }
   };
   return (
-    <SocketProvider>
-    
-    <div className="w-full h-screen bg-chat-bg dark:bg-chat-bg flex flex-col md:flex-row overflow-hidden">
+    <AuthProvider>
+      <SocketProvider>
+        <div className="w-full h-screen bg-chat-bg dark:bg-chat-bg flex flex-col md:flex-row overflow-hidden">
       {/* Mobile layout */}
       <div className="flex flex-col flex-1 md:hidden overflow-hidden">
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -219,7 +220,8 @@ export function App() {
 
         }
       </AnimatePresence>
-    </div>
-    </SocketProvider>
+        </div>
+      </SocketProvider>
+    </AuthProvider>
   );
 }
