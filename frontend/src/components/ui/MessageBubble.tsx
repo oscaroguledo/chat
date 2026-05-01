@@ -366,12 +366,12 @@ export function MessageBubble({
           }
 
           {/* Reply quote — clickable to scroll to original or navigate to different chat */}
-          {replyToMessage &&
+          {(replyToMessage || message.replyToData) &&
           <button
             onClick={(e) => {
               e.stopPropagation();
               console.log('Reply clicked:', {
-                replyToMessageId: replyToMessage.id,
+                replyToMessageId: replyToMessage?.id,
                 currentChatId,
                 replyToChatId: message.replyToChatId,
                 hasOnNavigateToMessage: !!onNavigateToMessage,
@@ -381,9 +381,9 @@ export function MessageBubble({
               const targetChatId = message.replyToChatId;
               if (targetChatId && targetChatId !== currentChatId && onNavigateToMessage) {
                 // Navigate to different chat with the message
-                console.log('Navigating to different chat:', targetChatId, replyToMessage.id);
-                onNavigateToMessage(targetChatId, replyToMessage.id);
-              } else {
+                console.log('Navigating to different chat:', targetChatId, replyToMessage?.id || message.replyTo);
+                onNavigateToMessage(targetChatId, replyToMessage?.id || message.replyTo!);
+              } else if (replyToMessage) {
                 // Scroll to message in current chat
                 console.log('Scrolling to message in current chat:', replyToMessage.id);
                 onScrollToMessage?.(replyToMessage.id);
@@ -392,9 +392,9 @@ export function MessageBubble({
             className={`mb-1 px-3 py-2 rounded-lg text-sm border-l-2 max-w-full text-left cursor-pointer hover:opacity-80 transition-opacity ${isOwnMessage ? 'bg-slate-600 border-slate-400 text-white' : 'bg-slate-100 dark:bg-slate-700 border-chat-accent text-chat-text dark:text-chat-text'}`}>
             
               <p className="font-medium text-xs opacity-70 mb-0.5">
-                {users[replyToMessage.senderId].name}
+                {replyToMessage ? users[replyToMessage.senderId].name : message.replyToData?.senderName}
               </p>
-              <p className="opacity-80 truncate">{replyToMessage.content}</p>
+              <p className="opacity-80 truncate">{replyToMessage?.content || message.replyToData?.content}</p>
             </button>
           }
 

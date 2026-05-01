@@ -136,6 +136,11 @@ export function ChatWindow({
       status: 'sent',
       replyTo: replyingTo?.id,
       replyToChatId: replyingTo?.id ? chat.id : undefined, // Store which chat the replied message is from
+      replyToData: replyingTo ? { // Store snapshot of quoted message for display
+        senderId: replyingTo.senderId,
+        senderName: users[replyingTo.senderId]?.name || 'Unknown',
+        content: replyingTo.content
+      } : undefined,
       mentions
     };
     setMessages([...messages, newMessage]);

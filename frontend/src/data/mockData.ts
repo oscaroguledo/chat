@@ -23,6 +23,7 @@ export interface Message {
   type: MessageType;
   replyTo?: string;
   replyToChatId?: string; // For navigating to original message in different chat
+  replyToData?: { senderId: string; senderName: string; content: string; }; // Snapshot of quoted message for display
   reactions?: {emoji: string;userIds: string[];}[];
   edited?: boolean;
   mentions?: string[];
