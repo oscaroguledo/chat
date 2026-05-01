@@ -450,7 +450,7 @@ export function ChatWindow({
                   onClick={() => {
                     setShowSearch(false);
                     setSearchQuery('');
-                    setCurrentMatchIndex(0);
+                    setSearchIndex(0);
                   }}>
                   <XIcon className="w-4 h-4" />
                 </IconButton>
