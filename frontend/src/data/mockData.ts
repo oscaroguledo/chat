@@ -204,7 +204,7 @@ export const chats: Chat[] = [
     timestamp: new Date(now.getTime() - 15 * 60 * 1000),
     type: 'video',
     videoUrl:
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+    'https://www.w3schools.com/html/mov_bbb.mp4'
   },
   {
     id: 'msg-8',
@@ -304,7 +304,7 @@ export const chats: Chat[] = [
     timestamp: new Date(now.getTime() - 10 * 60 * 1000),
     type: 'video',
     videoUrl:
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+    'https://www.w3schools.com/html/movie.mp4'
   }]
 
 },
