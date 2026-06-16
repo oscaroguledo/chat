@@ -1,0 +1,168 @@
+version: '3.9'
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: chat_postgres
+    environment:
+      POSTGRES_DB: chatapp
+      POSTGRES_USER: chatapp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chatapp_secret}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chatapp -d chatapp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chat_network
+    restart: unless-stopped
+
+  # ── Redis ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: chat_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secret}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chat_network
+    restart: unless-stopped
+
+  # ── Kafka (KRaft — no Zookeeper) ────────────────────────────────────────────
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: chat_kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: 168
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - chat_network
+    restart: unless-stopped
+
+  # ── MinIO (object storage) ──────────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: chat_minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin_secret}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chat_network
+    restart: unless-stopped
+
+  # ── Java Backend ────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chat_backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/chatapp
+      SPRING_DATASOURCE_USERNAME: chatapp
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-chatapp_secret}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_secret}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin_secret}
+      MINIO_BUCKET: chat-files
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_change_in_prod_must_be_at_least_64_chars_long_abcdefghijk}
+      JWT_EXPIRY_MS: ${JWT_EXPIRY_MS:-86400000}
+      JWT_REFRESH_EXPIRY_MS: ${JWT_REFRESH_EXPIRY_MS:-604800000}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - chat_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # ── React Frontend (Nginx) ──────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ""
+        VITE_WS_URL: ""
+        VITE_APP_NAME: "ChatApp"
+    container_name: chat_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - chat_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  kafka_data:
+  minio_data:
+
+networks:
+  chat_network:
+    driver: bridge

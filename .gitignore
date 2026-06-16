@@ -1,3 +1,8 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
 # Logs
 logs
 *.log
@@ -12,6 +17,15 @@ dist
 dist-ssr
 *.local
 
+# Java / Maven
+backend/target/
+*.class
+*.jar
+*.war
+
+# Coverage reports
+coverage/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +36,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.claude/
