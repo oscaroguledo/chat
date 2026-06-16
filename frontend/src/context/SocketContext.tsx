@@ -1,70 +1,120 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { Client, IMessage } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { useAuth } from './AuthContext';
 
+export interface WsMessage {
+  type: string;
+  payload?: unknown;
+  userId?: string;
+  chatId?: string;
+  typing?: boolean;
+  status?: string;
+}
+
+type Listener = (msg: WsMessage) => void;
+
 interface SocketContextType {
-  socket: Socket | null;
   connected: boolean;
+  subscribe: (destination: string, listener: Listener) => () => void;
+  publish: (destination: string, body: object) => void;
 }
 
-const SocketContext = createContext<SocketContextType>({ socket: null, connected: false });
+const SocketContext = createContext<SocketContextType>({
+  connected: false,
+  subscribe: () => () => {},
+  publish: () => {},
+});
 
-interface SocketProviderProps {
-  children: React.ReactNode;
-}
+const WS_URL = (import.meta.env.VITE_WS_URL as string) || '';
 
-export function SocketProvider({ children }: SocketProviderProps) {
-  const [socket, setSocket] = useState<Socket | null>(null);
+export function SocketProvider({ children }: { children: React.ReactNode }) {
+  const { token } = useAuth();
   const [connected, setConnected] = useState(false);
-  const { user } = useAuth(); // Auth disabled - socket connects regardless
+  const clientRef = useRef<Client | null>(null);
+  const listenersRef = useRef<Map<string, Set<Listener>>>(new Map());
+  const stompSubsRef = useRef<Map<string, ReturnType<Client['subscribe']>>>(new Map());
 
   useEffect(() => {
-    // Connect to WebSocket server (auth disabled for now)
-    const newSocket = io('http://localhost:8000', {
-      autoConnect: true,
-      auth: { token: user?.token || 'no-token' } // Send token if available
-    });
-
-    newSocket.on('connect', () => {
-      console.log('Socket connected:', newSocket.id);
-      setConnected(true);
-    });
-
-    newSocket.on('disconnect', () => {
-      console.log('Socket disconnected');
+    if (!token) {
+      clientRef.current?.deactivate();
       setConnected(false);
+      return;
+    }
+
+    const client = new Client({
+      webSocketFactory: () => new SockJS(`${WS_URL}/ws`),
+      connectHeaders: { Authorization: `Bearer ${token}` },
+      reconnectDelay: 3000,
+      onConnect: () => {
+        setConnected(true);
+        // Re-subscribe all pending listeners after reconnect
+        listenersRef.current.forEach((_, dest) => {
+          if (!stompSubsRef.current.has(dest)) {
+            const sub = client.subscribe(dest, (msg: IMessage) => {
+              try {
+                const parsed: WsMessage = JSON.parse(msg.body);
+                listenersRef.current.get(dest)?.forEach(fn => fn(parsed));
+              } catch { /* ignore malformed */ }
+            });
+            stompSubsRef.current.set(dest, sub);
+          }
+        });
+      },
+      onDisconnect: () => {
+        setConnected(false);
+        stompSubsRef.current.clear();
+      },
+      onStompError: frame => console.warn('STOMP error', frame.headers?.message),
     });
 
-    newSocket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error.message);
-      setConnected(false);
-    });
-    
+    client.activate();
+    clientRef.current = client;
 
-    setSocket(newSocket);
-
-    // Cleanup on unmount or when user changes
     return () => {
-      newSocket.disconnect();
+      client.deactivate();
+      stompSubsRef.current.clear();
     };
-  }, [user]);
+  }, [token]);
 
-  const value: SocketContextType = {
-    socket,
-    connected
+  const subscribe = (destination: string, listener: Listener): (() => void) => {
+    if (!listenersRef.current.has(destination)) {
+      listenersRef.current.set(destination, new Set());
+    }
+    listenersRef.current.get(destination)!.add(listener);
+
+    const client = clientRef.current;
+    if (client?.connected && !stompSubsRef.current.has(destination)) {
+      const sub = client.subscribe(destination, (msg: IMessage) => {
+        try {
+          const parsed: WsMessage = JSON.parse(msg.body);
+          listenersRef.current.get(destination)?.forEach(fn => fn(parsed));
+        } catch { /* ignore */ }
+      });
+      stompSubsRef.current.set(destination, sub);
+    }
+
+    return () => {
+      listenersRef.current.get(destination)?.delete(listener);
+      if (listenersRef.current.get(destination)?.size === 0) {
+        listenersRef.current.delete(destination);
+        stompSubsRef.current.get(destination)?.unsubscribe();
+        stompSubsRef.current.delete(destination);
+      }
+    };
+  };
+
+  const publish = (destination: string, body: object) => {
+    clientRef.current?.publish({ destination, body: JSON.stringify(body) });
   };
 
   return (
-    <SocketContext.Provider value={value}>
+    <SocketContext.Provider value={{ connected, subscribe, publish }}>
       {children}
     </SocketContext.Provider>
   );
 }
 
 export function useSocket(): SocketContextType {
-  const context = useContext(SocketContext);
-  if (context === undefined) {
-    throw new Error('useSocket must be used within a SocketProvider');
-  }
-  return context;
+  return useContext(SocketContext);
 }

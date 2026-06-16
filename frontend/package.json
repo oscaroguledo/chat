@@ -11,16 +11,20 @@
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
+    "@stomp/stompjs": "^7.3.0",
+    "axios": "^1.18.0",
     "framer-motion": "^11.5.4",
     "lucide-react": "0.522.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "sockjs-client": "^1.6.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.18",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
+    "@types/sockjs-client": "^1.5.4",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
     "@vitejs/plugin-react": "^4.2.1",
