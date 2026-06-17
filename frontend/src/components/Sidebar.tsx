@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Chat, currentUser, users, Call, mockCalls } from '@/data/mockData';
+import { Chat, users, Call, mockCalls } from '@/data/mockData';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { IconButton } from '@/components/ui/IconButton';
@@ -44,6 +45,7 @@ export function Sidebar({
   onToggleDarkMode,
   darkMode
 }: SidebarProps) {
+  const { user: authUser, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<SidebarView>('chats');
   const [chatFilter, setChatFilter] = useState<'all' | 'unread' | 'group'>('all');
@@ -93,7 +95,7 @@ export function Sidebar({
     return lastMessage.content;
   };
   const contactList = Object.values(users).filter(
-    (u) => u.id !== currentUser.id
+    (u) => u.id !== (authUser?.id || '')
   );
   // Sub-view header
   const renderSubHeader = (title: string) =>
@@ -361,6 +363,10 @@ export function Sidebar({
     );
   };
 
+  const displayName = authUser?.name || 'Unknown';
+  const avatarUrl = authUser?.avatarUrl ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`;
+
   // Profile view
   const renderProfile = () =>
   <>
@@ -369,34 +375,34 @@ export function Sidebar({
         <div className="flex flex-col items-center py-8">
           <div className="relative mb-4">
             <img
-            src={currentUser.avatar}
-            alt={currentUser.name}
+            src={avatarUrl}
+            alt={displayName}
             className="w-24 h-24 rounded-full" />
-          
+
             <button className="absolute bottom-0 right-0 w-8 h-8 bg-chat-accent rounded-full flex items-center justify-center text-white shadow-md">
               <CameraIcon className="w-4 h-4" />
             </button>
           </div>
           <h3 className="text-xl font-semibold text-chat-text dark:text-chat-text">
-            {currentUser.name}
+            {displayName}
           </h3>
-          <p className={`text-sm mt-1 ${currentUser.status === 'online' ? 'text-green-500' : 'text-red-500'}`}>
-            {currentUser.status === 'online' ? 'Online' : 'Offline'}
+          <p className={`text-sm mt-1 ${authUser?.status === 'online' ? 'text-green-500' : 'text-red-500'}`}>
+            {authUser?.status === 'online' ? 'Online' : 'Offline'}
           </p>
         </div>
         <div className="border-t border-chat-border dark:border-chat-border">
           {[
         {
           label: 'Display Name',
-          value: currentUser.name
+          value: displayName
+        },
+        {
+          label: 'Email',
+          value: authUser?.email || ''
         },
         {
           label: 'Bio',
-          value: "Hey there! I'm using ChatApp"
-        },
-        {
-          label: 'Phone',
-          value: '+1 (555) 123-4567'
+          value: authUser?.bio || "Hey there! I'm using ChatApp"
         }].
         map((field) =>
         <div
@@ -414,6 +420,13 @@ export function Sidebar({
               <PencilIcon className="w-4 h-4 text-chat-muted dark:text-chat-muted" />
             </div>
         )}
+        </div>
+        <div className="p-4 mt-2">
+          <button
+            onClick={logout}
+            className="w-full py-2.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors text-sm font-medium">
+            Sign out
+          </button>
         </div>
       </div>
     </>;
@@ -522,7 +535,7 @@ export function Sidebar({
         const isActive = chat.id === activeChat.id;
         const hasOnlineUser = chat.participants.some((id) => {
           const user = users[id];
-          return user && user.status === 'online' && id !== currentUser.id;
+          return user && user.status === 'online' && id !== (authUser?.id || '');
         });
         return (
           <motion.button

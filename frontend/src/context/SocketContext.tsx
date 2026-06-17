@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useAuth } from './AuthContext';
@@ -43,12 +43,12 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     }
 
     const client = new Client({
-      webSocketFactory: () => new SockJS(`${WS_URL}/ws`),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      webSocketFactory: () => new (SockJS as any)(`${WS_URL}/ws`),
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 3000,
       onConnect: () => {
         setConnected(true);
-        // Re-subscribe all pending listeners after reconnect
         listenersRef.current.forEach((_, dest) => {
           if (!stompSubsRef.current.has(dest)) {
             const sub = client.subscribe(dest, (msg: IMessage) => {
@@ -77,7 +77,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     };
   }, [token]);
 
-  const subscribe = (destination: string, listener: Listener): (() => void) => {
+  const subscribe = useCallback((destination: string, listener: Listener): (() => void) => {
     if (!listenersRef.current.has(destination)) {
       listenersRef.current.set(destination, new Set());
     }
@@ -102,11 +102,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         stompSubsRef.current.delete(destination);
       }
     };
-  };
+  }, []);
 
-  const publish = (destination: string, body: object) => {
+  const publish = useCallback((destination: string, body: object) => {
     clientRef.current?.publish({ destination, body: JSON.stringify(body) });
-  };
+  }, []);
 
   return (
     <SocketContext.Provider value={{ connected, subscribe, publish }}>

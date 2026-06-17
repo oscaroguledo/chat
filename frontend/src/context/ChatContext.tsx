@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { chatApi, messageApi, Chat, ChatMessage, userApi, AuthUser } from '@/services/api';
 import { useAuth } from './AuthContext';
 import { useSocket } from './SocketContext';
@@ -35,7 +35,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loadingChats, setLoadingChats] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [contacts, setContacts] = useState<AuthUser[]>([]);
+  const [contacts] = useState<AuthUser[]>([]);
   const [messagePage, setMessagePage] = useState(0);
   const [hasMoreMessages, setHasMoreMessages] = useState(false);
 

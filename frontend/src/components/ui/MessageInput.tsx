@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/Textarea';
 export interface MessageInputProps {
   onSendMessage: (content: string, mentions?: string[]) => void;
   onSendVoice?: (duration: number) => void;
+  onTypingChange?: (isTyping: boolean) => void;
   replyingTo?: Message;
   onCancelReply?: () => void;
   members?: Array<{ id: string; name: string; username?: string; email?: string; phone?: string; avatar: string }>;
@@ -29,6 +30,7 @@ export interface MessageInputProps {
 export function MessageInput({
   onSendMessage,
   onSendVoice,
+  onTypingChange,
   replyingTo,
   onCancelReply,
   members = [],
@@ -53,6 +55,7 @@ export function MessageInput({
       onSendMessage(message, selectedMentions.length > 0 ? selectedMentions : undefined);
       setMessage('');
       setSelectedMentions([]);
+      onTypingChange?.(false);
     }
   };
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -70,6 +73,7 @@ export function MessageInput({
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setMessage(value);
+    onTypingChange?.(value.length > 0);
     
     // Check for @ trigger
     const cursorPosition = e.target.selectionStart;

@@ -24,7 +24,7 @@ interface ActiveCall {
 
 function ChatApp() {
   const { isAuthenticated, isLoading } = useAuth();
-  const { chats, activeChat, setActiveChat, messages } = useChat();
+  const { chats, activeChat, setActiveChat } = useChat();
 
   const [scrollToMessageId, setScrollToMessageId] = useState<string | undefined>(undefined);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
