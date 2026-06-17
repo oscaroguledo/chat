@@ -10,6 +10,7 @@ import com.chatapp.exception.ConflictException;
 import com.chatapp.exception.ResourceNotFoundException;
 import com.chatapp.exception.AppException;
 import com.chatapp.repository.RefreshTokenRepository;
+import com.chatapp.config.JwtProperties;
 import com.chatapp.repository.UserRepository;
 import com.chatapp.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProperties jwtProperties;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
@@ -86,7 +88,7 @@ public class AuthService {
         RefreshToken rt = RefreshToken.builder()
                 .user(user)
                 .token(rawRefresh)
-                .expiresAt(Instant.now().plusMillis(604800000L))
+                .expiresAt(Instant.now().plusMillis(jwtProperties.getRefreshExpiryMs()))
                 .build();
         refreshTokenRepository.save(rt);
 
